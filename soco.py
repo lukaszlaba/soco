@@ -458,8 +458,8 @@ def load_clipboard_data():
     root = Tk()
     root.withdraw()
     global data
-    #data = root.clipboard_get()
-    data ='''Beam	L/C	Node	Fx kip	Fy kip	Fz kip	Mx kip-ft	My kip-ft	Mz kip-ft
+    data = root.clipboard_get()
+    '''data =Beam	L/C	Node	Fx kip	Fy kip	Fz kip	Mx kip-ft	My kip-ft	Mz kip-ft
 1	1001 1.4D (N-S)	1	0	18.355	18.355	18.355	18.355	-10
 		2	0	18.356	18.356	18.356	18.356	-0.008
 	1002 1.2D+1.6L (N-S)	1	0	-89	31.613	31.613	31.613	0
@@ -1169,7 +1169,7 @@ def sort_serch_list():
 
 if __name__ == '__main__':
     load_clipboard_data()
-    m1 = res_dict['1']  
+    #m1 = res_dict['1']  
     app = QtWidgets.QApplication(sys.argv)
     myapp = MAINWINDOW()
     print_dialog = QPrintDialog()
