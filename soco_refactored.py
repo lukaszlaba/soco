@@ -203,7 +203,7 @@ def find_maxabs(list=[[2,7,4], [43,3,-32]], col=2):
         #print(record)
         if abs(record[col]) > abs(maxabsrecord[col]):
             maxabsrecord = record
-    return maxabsrecord[col], maxabsrecord
+    return abs(maxabsrecord[col]), maxabsrecord
         
 
 
@@ -211,11 +211,9 @@ class MEMEB_RES():
 
     def __init__(self, id=None):
         self.number = None
-        self.i = None
-        self.j = None
+        self.node = None
         #--
-        self.res_i = []
-        self.res_j = []
+        self.res = []
         #--
         self.colFx = 3
         self.colFy = 4
@@ -237,35 +235,19 @@ class MEMEB_RES():
         self.calc_bolt_maxshear()
     #---
     def calc_Mtot(self):
-        for record in self.res_i:
-            My = record[self.colMy]
-            Mz = record[self.colMz]
-            record.append(round((My**2 + Mz**2)**0.5, 2))
-        for record in self.res_j:
+        for record in self.res:
             My = record[self.colMy]
             Mz = record[self.colMz]
             record.append(round((My**2 + Mz**2)**0.5, 2))
 
     def calc_Vtot(self):
-        for record in self.res_i:
-            Fy = record[self.colFy]
-            Fz = record[self.colFz]
-            record.append(round((Fy**2 + Fz**2)**0.5, 2))
-        for record in self.res_j:
+        for record in self.res:
             Fy = record[self.colFy]
             Fz = record[self.colFz]
             record.append(round((Fy**2 + Fz**2)**0.5, 2))
 
     def calc_bolt_maxtension(self):
-        for record in self.res_i:
-            My = abs(record[self.colMy])
-            Mz = abs(record[self.colMz])
-            Fx = record[self.colFx]
-            fp = Fx / 4
-            fm = -My / 0.2 / 2 - My / 0.2 / 2
-            f = fp + fm
-            record.append(round(f, 2))
-        for record in self.res_j:
+        for record in self.res:
             My = abs(record[self.colMy])
             Mz = abs(record[self.colMz])
             Fx = record[self.colFx]
@@ -275,15 +257,7 @@ class MEMEB_RES():
             record.append(round(f, 2))
 
     def calc_bolt_maxcompression(self):
-        for record in self.res_i:
-            My = abs(record[self.colMy])
-            Mz = abs(record[self.colMz])
-            Fx = record[self.colFx]
-            fp = Fx / 4
-            fm = My / 0.2 / 2 + My / 0.2 / 2
-            f = fp + fm
-            record.append(round(f, 2))
-        for record in self.res_j:
+        for record in self.res:
             My = abs(record[self.colMy])
             Mz = abs(record[self.colMz])
             Fx = record[self.colFx]
@@ -293,143 +267,83 @@ class MEMEB_RES():
             record.append(round(f, 2))
 
     def calc_bolt_maxshear(self):
-        for record in self.res_i:
+        for record in self.res:
             Vtot = abs(record[self.colVtot])
             Mx = abs(record[self.colMx])
             fv = Vtot / 4
             fm = Mx / 2 / (0.1**2 + 0.2**2)**0.5
             f = fv + fm
             record.append(round(f, 2))
-        for record in self.res_j:
-            Vtot = abs(record[self.colVtot])
-            Mx = abs(record[self.colMx])
-            fv = Vtot / 4
-            fm = Mx / 2 / (0.1**2 + 0.2**2)**0.5
-            f = fv + fm
-            record.append(round(f, 2))
+
     #---
     @property
-    def Fximax(self):
-        return find_max(self.res_i, self.colFx)
+    def Fxmax(self):
+        return find_max(self.res, self.colFx)
     @property
-    def Fximin(self):
-        return find_min(self.res_i, self.colFx)
-    @property
-    def Fxjmax(self):
-        return find_max(self.res_j, self.colFx)
-    @property
-    def Fxjmin(self):
-        return find_min(self.res_j, self.colFx)
+    def Fxmin(self):
+        return find_min(self.res, self.colFx)
+
 
     @property
-    def Fyimax(self):
-        return find_maxabs(self.res_i, self.colFy)
-    @property
-    def Fyjmax(self):
-        return find_maxabs(self.res_j, self.colFy)
+    def Fymax(self):
+        return find_maxabs(self.res, self.colFy)
         
     @property
-    def Fzimax(self):
-        return find_maxabs(self.res_i, self.colFz)
-    @property
-    def Fzjmax(self):
-        return find_maxabs(self.res_j, self.colFz)
+    def Fzmax(self):
+        return find_maxabs(self.res, self.colFz)
 
     @property
-    def Mximax(self):
-        return find_maxabs(self.res_i, self.colMx)
-    @property
-    def Mxjmax(self):
-        return find_maxabs(self.res_j, self.colMx)
+    def Mxmax(self):
+        return find_maxabs(self.res, self.colMx)
 
     @property
-    def Myimax(self):
-        return find_maxabs(self.res_i, self.colMy)
-    @property
-    def Myjmax(self):
-        return find_maxabs(self.res_j, self.colMy)
+    def Mymax(self):
+        return find_maxabs(self.res, self.colMy)
 
     @property
-    def Mzimax(self):
-        return find_maxabs(self.res_i, self.colMz)
-    @property
-    def Mzjmax(self):
-        return find_maxabs(self.res_j, self.colMz)
+    def Mzmax(self):
+        return find_maxabs(self.res, self.colMz)
 
     @property
-    def Mzimax(self):
-        return find_maxabs(self.res_i, self.colMz)
-    @property
-    def Mzjmax(self):
-        return find_maxabs(self.res_j, self.colMz)
+    def Mzmax(self):
+        return find_maxabs(self.res, self.colMz)
         
     @property
-    def Mtotimax(self):
-        return find_maxabs(self.res_i, self.colMtot)
-    @property
-    def Mtotjmax(self):
-        return find_maxabs(self.res_j, self.colMtot)
+    def Mtotmax(self):
+        return find_maxabs(self.res, self.colMtot)
 
     @property
-    def Vtotimax(self):
-        return find_maxabs(self.res_i, self.colVtot)
-    @property
-    def Vtotjmax(self):
-        return find_maxabs(self.res_j, self.colVtot)
+    def Vtotmax(self):
+        return find_maxabs(self.res, self.colVtot)
 
     @property
-    def Bolttensionimax(self):
-        return find_maxabs(self.res_i, self.colboltmaxtension)
-    @property
-    def Bolttensionjmax(self):
-        return find_maxabs(self.res_j, self.colboltmaxtension)
+    def Bolttensionmax(self):
+        return find_maxabs(self.res, self.colboltmaxtension)
         
     @property
-    def Boltcompressionimax(self):
-        return find_maxabs(self.res_i, self.colmaxboltcompression)
-    @property
-    def Boltcompressionjmax(self):
-        return find_maxabs(self.res_j, self.colmaxboltcompression)
+    def Boltcompressionmax(self):
+        return find_maxabs(self.res, self.colmaxboltcompression)
 
     @property
-    def Boltshearimax(self):
-        return find_maxabs(self.res_i, self.colmaxboltshear)
-    @property
-    def Boltshearjmax(self):
-        return find_maxabs(self.res_j, self.colmaxboltshear)
+    def Boltshearmax(self):
+        return find_maxabs(self.res, self.colmaxboltshear)        
+    
     
     @property
-    def report_i(self):
+    def report(self):
         record =  []
         #--
-        record.append([str(self.number) + 'i', 'Fximax = '+str(self.Fximax[0])] + self.Fximax[1][1:9])
-        record.append([str(self.number) + 'i', 'Fximin = '+str(self.Fximin[0])] + self.Fximin[1][1:9])
-        record.append([str(self.number) + 'i', 'Fyimax = '+str(self.Fyimax[0])] + self.Fximax[1][1:9])        
-        record.append([str(self.number) + 'i', 'Fzimax = '+str(self.Fzimax[0])] + self.Fzimax[1][1:9])   
-        record.append([str(self.number) + 'i', 'Myimax = '+str(self.Myimax[0])] + self.Mximax[1][1:9])        
-        record.append([str(self.number) + 'i', 'Mzimax = '+str(self.Mzimax[0])] + self.Mzimax[1][1:9])
-        record.append([str(self.number) + 'i', 'Mtotimax = '+str(self.Mtotimax[0])] + self.Mtotimax[1][1:9])
-        record.append([str(self.number) + 'i', 'Vtotimax = '+str(self.Vtotimax[0])] + self.Vtotimax[1][1:9])
-        record.append([str(self.number) + 'i', 'Max bolt comp'] + self.Boltcompressionimax[1][1:9])
-        record.append([str(self.number) + 'i', 'Max bolt tens'] + self.Bolttensionimax[1][1:9])
-        record.append([str(self.number) + 'i', 'Max bolt shear'] + self.Boltshearimax[1][1:9])
-        return record
-    
-    @property
-    def report_j(self):
-        record =  []
-        #--
-        record.append([str(self.number) + 'j', 'Fxjmax = '+str(self.Fxjmax[0])] + self.Fxjmax[1][1:9])
-        record.append([str(self.number) + 'j', 'Fxjmin = '+str(self.Fxjmin[0])] + self.Fxjmin[1][1:9])
-        record.append([str(self.number) + 'j', 'Fyjmax = '+str(self.Fyjmax[0])] + self.Fxjmax[1][1:9])        
-        record.append([str(self.number) + 'j', 'Fzjmax = '+str(self.Fzjmax[0])] + self.Fzjmax[1][1:9])   
-        record.append([str(self.number) + 'j', 'Myjmax = '+str(self.Myjmax[0])] + self.Mxjmax[1][1:9])        
-        record.append([str(self.number) + 'j', 'Mzjmax = '+str(self.Mzjmax[0])] + self.Mzjmax[1][1:9])
-        record.append([str(self.number) + 'j', 'Mtotjmax = '+str(self.Mtotjmax[0])] + self.Mtotjmax[1][1:9])
-        record.append([str(self.number) + 'j', 'Vtotjmax = '+str(self.Vtotjmax[0])] + self.Vtotjmax[1][1:9])
-        record.append([str(self.number) + 'j', 'Max bolt comp'] + self.Boltcompressionjmax[1][1:9])
-        record.append([str(self.number) + 'j', 'Max bolt tens'] + self.Bolttensionjmax[1][1:9])
-        record.append([str(self.number) + 'j', 'Max bolt shear'] + self.Boltshearjmax[1][1:9])
+        record.append([str(self.number), 'Fxmax = '+str(self.Fxmax[0])] + self.Fxmax[1][1:9])
+        record.append([str(self.number), 'Fxmin = '+str(self.Fxmin[0])] + self.Fxmin[1][1:9])
+        record.append([str(self.number), 'Fymax = '+str(self.Fymax[0])] + self.Fxmax[1][1:9])        
+        record.append([str(self.number), 'Fzmax = '+str(self.Fzmax[0])] + self.Fzmax[1][1:9])   
+        record.append([str(self.number), 'Mymax = '+str(self.Mymax[0])] + self.Mxmax[1][1:9])        
+        record.append([str(self.number), 'Mzmax = '+str(self.Mzmax[0])] + self.Mzmax[1][1:9])
+        record.append([str(self.number), 'Mtoimax = '+str(self.Mtotmax[0])] + self.Mtotmax[1][1:9])
+        record.append([str(self.number), 'Vtotmax = '+str(self.Vtotmax[0])] + self.Vtotmax[1][1:9])
+        record.append([str(self.number), 'Max bolt comp'] + self.Boltcompressionmax[1][1:9])
+        record.append([str(self.number), 'Max bolt tens'] + self.Bolttensionmax[1][1:9])
+        record.append([str(self.number), 'Max bolt shear'] + self.Boltshearmax[1][1:9])
         return record
 
 class MAINWINDOW(QtWidgets.QMainWindow):
@@ -459,64 +373,8 @@ def load_clipboard_data():
     root.withdraw()
     global data
     #data = root.clipboard_get()
-    data = '''Beam	L/C	Node	Fx kip	Fy kip	Fz kip	Mx kip-ft	My kip-ft	Mz kip-ft
-1	1001 1.4D (N-S)	1	0	18.355	18.355	18.355	18.355	-10
-		2	0	18.356	18.356	18.356	18.356	-0.008
-	1002 1.2D+1.6L (N-S)	1	0	-89	31.613	31.613	31.613	0
-		2	0	31.615	31.615	31.615	31.615	-0.013
-	1003 1.4D (E-W)	1	22	18.355	18.355	18.355	18.355	0
-		2	33	18.356	18.356	18.356	18.356	-0.008
-	1004 1.2D+1.6L (E-W)	1	-4	31.613	31.613	31.613	31.613	0
-		2	-2	31.615	31.615	31.615	31.615	-0.013
-2	1001 1.4D (N-S)	2	0	20.237	20.237	20.237	20.237	0.008
-		3	0	20.237	20.237	20.237	20.237	-0.007
-	1002 1.2D+1.6L (N-S)	2	0	34.856	34.856	34.856	34.856	0.013
-		3	0	34.855	34.855	34.855	34.855	-0.011
-	1003 1.4D (E-W)	2	22	20.237	20.237	20.237	20.237	0.008
-		3	33	20.237	20.237	20.237	20.237	-0.007
-	1004 1.2D+1.6L (E-W)	2	-4	34.856	34.856	34.856	34.856	0.013
-		3	-2	34.855	34.855	34.855	34.855	-0.011
-3	1001 1.4D (N-S)	3	0	18.356	18.356	18.356	18.356	0.007
-		4	0	18.355	18.355	18.355	18.355	0
-	1002 1.2D+1.6L (N-S)	3	0	31.615	31.615	31.615	31.615	0.011
-		4	0	31.613	31.613	31.613	31.613	0
-	1003 1.4D (E-W)	3	22	18.356	18.356	18.356	18.356	0.007
-		4	33	18.355	18.355	18.355	18.355	0
-	1004 1.2D+1.6L (E-W)	3	-4	31.615	31.615	31.615	31.615	0.011
-		4	-2	31.613	31.613	31.613	31.613	0
-4	1001 1.4D (N-S)	5	0	18.754	18.754	18.754	18.754	0
-		2	0	-18.561	-18.561	-18.561	-18.561	85.515
-	1002 1.2D+1.6L (N-S)	5	0	32.14	32.14	32.14	32.14	0
-		2	0	-31.975	-31.975	-31.975	-31.975	146.931
-	1003 1.4D (E-W)	5	22	18.754	18.754	18.754	18.754	0
-		2	33	-18.561	-18.561	-18.561	-18.561	85.515
-	1004 1.2D+1.6L (E-W)	5	-4	32.14	32.14	32.14	32.14	0
-		2	-2	-31.975	-31.975	-31.975	-31.975	146.931
-5	1001 1.4D (N-S)	2	0	-20.032	-20.032	-20.032	-20.032	-85.515
-		7	0	20.211	20.211	20.211	20.211	0
-	1002 1.2D+1.6L (N-S)	2	0	-34.495	-34.495	-34.495	-34.495	-146.931
-		7	0	34.649	34.649	34.649	34.649	0
-	1003 1.4D (E-W)	2	22	-20.032	-20.032	-20.032	-20.032	-85.515
-		7	33	20.211	20.211	20.211	20.211	0
-	1004 1.2D+1.6L (E-W)	2	-4	-34.495	-34.495	-34.495	-34.495	-146.931
-		7	-2	34.649	34.649	34.649	34.649	0
-6	1001 1.4D (N-S)	6	0	18.754	18.754	18.754	18.754	0
-		3	0	-18.561	-18.561	-18.561	-18.561	85.515
-	1002 1.2D+1.6L (N-S)	6	0	32.14	32.14	32.14	32.14	0
-		3	0	-31.975	-31.975	-31.975	-31.975	146.93
-	1003 1.4D (E-W)	6	22	18.754	18.754	18.754	18.754	0
-		3	33	-18.561	-18.561	-18.561	-18.561	85.515
-	1004 1.2D+1.6L (E-W)	6	-4	32.14	32.14	32.14	32.14	0
-		3	-2	-31.975	-31.975	-31.975	-31.975	146.93
-7	1001 1.4D (N-S)	3	0	-20.032	-20.032	-20.032	-20.032	-85.515
-		8	0	20.21	20.21	20.21	20.21	0
-	1002 1.2D+1.6L (N-S)	3	0	-34.495	-34.495	-34.495	-34.495	-146.93
-		8	0	34.648	34.648	34.648	34.648	0
-	1003 1.4D (E-W)	3	22	-20.032	-20.032	-20.032	-20.032	-85.515
-		8	33	20.21	20.21	20.21	20.21	0
-	1004 1.2D+1.6L (E-W)	3	-4	-34.495	-34.495	-34.495	-34.495	-146.93
-		8	-2	34.648	34.648	34.648	34.648	0
-'''
+    import testdata
+    data = testdata.data
     data = data.replace("\r", '')
     data =  data.split('\n')
     for i in range(len(data)):#--each parameter
@@ -527,14 +385,19 @@ def load_clipboard_data():
         #print(i)
         if data[i][1] == '':
             data[i][1]=data[i-1][1]
-    
-    print(data)
+
     #--
     for i in range(1, len(data)-1):
-        #print(i)
         record = data[i]
         for j in range(3, 9): 
             record[j] = eval(record[j])
+
+    for i in range(1, len(data)-1):
+        record = data[i]
+        record[1] = record[1].split()[0]
+
+
+
     #--
     global res_dict
     res_dict = {}
@@ -546,18 +409,22 @@ def load_clipboard_data():
         #print(record)
         if record[0] != '':
             #print ('new-------')
-            memb = MEMEB_RES()
+            memb_i = MEMEB_RES()
+            memb_j = MEMEB_RES()
             curent_mem_number = record[0]
-            memb.number = curent_mem_number
+            memb_i.number = curent_mem_number + 'i'
+            memb_j.number = curent_mem_number + 'j'
         #print('zapis')
         if end == -1:
-            memb.i = record[2]
-            memb.res_i.append(record)
+            #memb.i = record[2]
+            memb_i.res.append(record)
         if end == 1:
-            memb.j = record[2]
-            memb.res_j.append(record)
+            #memb.j = record[2]
+            memb_j.res.append(record)
         end = end * -1
-        res_dict[curent_mem_number] = memb
+        res_dict[memb_i.number] = memb_i
+        res_dict[memb_j.number] = memb_j
+        
     
     for key in res_dict:
         res_dict[key].calc_additional_forces()
@@ -644,25 +511,75 @@ def get_memberlist():
     return memberlist
 
 def get_force_table(filterlist=['1i', '1j']):
-    rep_dict={}
-    for key in res_dict:
-        rep_dict[res_dict[key].number+'i'] = res_dict[key].report_i
-        rep_dict[res_dict[key].number+'j'] = res_dict[key].report_j
-    #print(rep_dict) 
-    
-    
     rows = []
     rows.append(['Loc', 'Type', 'LC', 'Node', 'Fx', 'Fy', 'Fz', 'Mx', 'My', 'Mz'])
     # 
     if filterlist:
         for i in filterlist:
-            if i in rep_dict.keys():
-                res = rep_dict[i]
-                for n in res:
-                    rows.append(n)
+            if i in res_dict.keys():
+                res = res_dict[i]
+                rows.append([str(res.number), 'Fxmax = '+str(res.Fxmax[0])] + res.Fxmax[1][1:9])
+                rows.append([str(res.number), 'Fxmin = '+str(res.Fxmin[0])] + res.Fxmin[1][1:9])
+                rows.append([str(res.number), 'Fymax = '+str(res.Fymax[0])] + res.Fymax[1][1:9])        
+                rows.append([str(res.number), 'Fzmax = '+str(res.Fzmax[0])] + res.Fzmax[1][1:9]) 
+                rows.append([str(res.number), 'Mxmax = '+str(res.Mxmax[0])] + res.Mxmax[1][1:9])    
+                rows.append([str(res.number), 'Mymax = '+str(res.Mymax[0])] + res.Mymax[1][1:9])        
+                rows.append([str(res.number), 'Mzmax = '+str(res.Mzmax[0])] + res.Mzmax[1][1:9])
+                rows.append([str(res.number), 'Mtoimax = '+str(res.Mtotmax[0])] + res.Mtotmax[1][1:9])
+                rows.append([str(res.number), 'Vtotmax = '+str(res.Vtotmax[0])] + res.Vtotmax[1][1:9])
+                rows.append([str(res.number), 'Max bolt comp'] + res.Boltcompressionmax[1][1:9])
+                rows.append([str(res.number), 'Max bolt tens'] + res.Bolttensionmax[1][1:9])
+                rows.append([str(res.number), 'Max bolt shear'] + res.Boltshearmax[1][1:9])
+
             else:
                 rows.append([i+'(!!)', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A'])
             rows.append(['Loc', 'Type', 'LC', 'Node', 'Fx', 'Fy', 'Fz', 'Mx', 'My', 'Mz'])
+        rows = rows[:-1]
+        return tabulate(rows, headers="firstrow", tablefmt="grid")
+    else:
+        return ''
+
+def get_extreme_force_table(filterlist=['1i', '1j']):
+    rows = []
+    rows.append(['Loc', 'Type', 'LC', 'Node', 'Fx', 'Fy', 'Fz', 'Mx', 'My', 'Mz'])
+    # 
+    if filterlist:
+        res = res_dict[has_Fxmax(filterlist)]
+        rows.append([str(res.number), 'Fxmax = '+str(res.Fxmax[0])] + res.Fxmax[1][1:9])
+        
+        res = res_dict[has_Fxmin(filterlist)]
+        rows.append([str(res.number), 'Fxmin = '+str(res.Fxmin[0])] + res.Fxmin[1][1:9])
+        
+        res = res_dict[has_Fymax(filterlist)]
+        rows.append([str(res.number), 'Fymax = '+str(res.Fymax[0])] + res.Fymax[1][1:9]) 
+          
+        res = res_dict[has_Fzmax(filterlist)]     
+        rows.append([str(res.number), 'Fzmax = '+str(res.Fzmax[0])] + res.Fzmax[1][1:9]) 
+
+        res = res_dict[has_Mxmax(filterlist)] 
+        rows.append([str(res.number), 'Mxmax = '+str(res.Mxmax[0])] + res.Mxmax[1][1:9])
+         
+        res = res_dict[has_Mymax(filterlist)] 
+        rows.append([str(res.number), 'Mymax = '+str(res.Mymax[0])] + res.Mymax[1][1:9])
+        
+        res = res_dict[has_Mzmax(filterlist)]        
+        rows.append([str(res.number), 'Mzmax = '+str(res.Mzmax[0])] + res.Mzmax[1][1:9])
+        
+        res = res_dict[has_Mtotmax(filterlist)]
+        rows.append([str(res.number), 'Mtotmax = '+str(res.Mtotmax[0])] + res.Mtotmax[1][1:9])
+        
+        res = res_dict[has_Vtotmax(filterlist)]
+        rows.append([str(res.number), 'Vtotmax = '+str(res.Vtotmax[0])] + res.Vtotmax[1][1:9])
+        
+        res = res_dict[has_Boltcompressionmax(filterlist)]
+        rows.append([str(res.number), 'Max bolt comp'] + res.Boltcompressionmax[1][1:9])
+        
+        res = res_dict[has_Bolttensionmax(filterlist)]
+        rows.append([str(res.number), 'Max bolt tens'] + res.Bolttensionmax[1][1:9])
+        
+        res = res_dict[has_Boltshearmax(filterlist)]
+        rows.append([str(res.number), 'Max bolt shear'] + res.Boltshearmax[1][1:9])
+        
         return tabulate(rows, headers="firstrow", tablefmt="grid")
     else:
         return ''
@@ -737,109 +654,53 @@ def get_force_table_statica_format(filterlist=None, factor=1.0):
         return ''
 
     
-
-
-
-
-
 def has_Fxmax(where):
-    tmp_dict={}
-    for key in res_dict:
-        tmp_dict[res_dict[key].number+'i'] = res_dict[key].Fximax[0]
-        tmp_dict[res_dict[key].number+'j'] = res_dict[key].Fxjmax[0]
-    data = {i : tmp_dict[i] for i in where}
-    loc = max(data, key=data.get)
-    return loc
+    data = {i : res_dict[i].Fxmax[0] for i in where}
+    return max(data, key=data.get)
 
 def has_Fxmin(where):
-    tmp_dict={}
-    for key in res_dict:
-        tmp_dict[res_dict[key].number+'i'] = res_dict[key].Fximin[0]
-        tmp_dict[res_dict[key].number+'j'] = res_dict[key].Fxjmin[0]
-    data = {i : tmp_dict[i] for i in where}
-    loc = max(data, key=data.get)
-    return loc
+    data = {i : res_dict[i].Fxmin[0] for i in where}
+    return min(data, key=data.get)
 
 def has_Fymax(where):
-    tmp_dict={}
-    for key in res_dict:
-        tmp_dict[res_dict[key].number+'i'] = res_dict[key].Fyimax[0]
-        tmp_dict[res_dict[key].number+'j'] = res_dict[key].Fyjmax[0]
-    data = {i : tmp_dict[i] for i in where}
-    loc = max(data, key=data.get)
-    return loc
+    data = {i : res_dict[i].Fymax[0] for i in where}
+    return max(data, key=data.get)
 
 def has_Fzmax(where):
-    tmp_dict={}
-    for key in res_dict:
-        tmp_dict[res_dict[key].number+'i'] = res_dict[key].Fzimax[0]
-        tmp_dict[res_dict[key].number+'j'] = res_dict[key].Fzjmax[0]
-    data = {i : tmp_dict[i] for i in where}
-    loc = max(data, key=data.get)
-    return loc
+    data = {i : res_dict[i].Fzmax[0] for i in where}
+    return max(data, key=data.get)
 
 def has_Mxmax(where):
-    tmp_dict={}
-    for key in res_dict:
-        tmp_dict[res_dict[key].number+'i'] = res_dict[key].Mximax[0]
-        tmp_dict[res_dict[key].number+'j'] = res_dict[key].Mxjmax[0]
-    data = {i : tmp_dict[i] for i in where}
-    loc = max(data, key=data.get)
-    return loc
+    data = {i : res_dict[i].Mxmax[0] for i in where}
+    return max(data, key=data.get)
 
 def has_Mymax(where):
-    tmp_dict={}
-    for key in res_dict:
-        tmp_dict[res_dict[key].number+'i'] = res_dict[key].Myimax[0]
-        tmp_dict[res_dict[key].number+'j'] = res_dict[key].Myjmax[0]
-    data = {i : tmp_dict[i] for i in where}
-    loc = max(data, key=data.get)
-    return loc, tmp_dict[loc]
+    data = {i : res_dict[i].Mymax[0] for i in where}
+    return max(data, key=data.get)
+
+def has_Mzmax(where):
+    data = {i : res_dict[i].Mzmax[0] for i in where}
+    return max(data, key=data.get)
 
 def has_Mtotmax(where):
-    tmp_dict={}
-    for key in res_dict:
-        tmp_dict[res_dict[key].number+'i'] = res_dict[key].Mtotimax[0]
-        tmp_dict[res_dict[key].number+'j'] = res_dict[key].Mtotjmax[0]
-    data = {i : tmp_dict[i] for i in where}
-    loc = max(data, key=data.get)
-    return loc
+    data = {i : res_dict[i].Mtotmax[0] for i in where}
+    return max(data, key=data.get)
 
 def has_Vtotmax(where):
-    tmp_dict={}
-    for key in res_dict:
-        tmp_dict[res_dict[key].number+'i'] = res_dict[key].Vtotimax[0]
-        tmp_dict[res_dict[key].number+'j'] = res_dict[key].Vtotjmax[0]
-    data = {i : tmp_dict[i] for i in where}
-    loc = max(data, key=data.get)
-    return loc
+    data = {i : res_dict[i].Vtotmax[0] for i in where}
+    return max(data, key=data.get)
 
 def has_Bolttensionmax(where):
-    tmp_dict={}
-    for key in res_dict:
-        tmp_dict[res_dict[key].number+'i'] = res_dict[key].Bolttensionimax[0]
-        tmp_dict[res_dict[key].number+'j'] = res_dict[key].Bolttensionjmax[0]
-    data = {i : tmp_dict[i] for i in where}
-    loc = max(data, key=data.get)
-    return loc
+    data = {i : res_dict[i].Bolttensionmax[0] for i in where}
+    return max(data, key=data.get)
 
 def has_Boltcompressionmax(where):
-    tmp_dict={}
-    for key in res_dict:
-        tmp_dict[res_dict[key].number+'i'] = res_dict[key].Boltcompressionimax[0]
-        tmp_dict[res_dict[key].number+'j'] = res_dict[key].Boltcompressionjmax[0]
-    data = {i : tmp_dict[i] for i in where}
-    loc = max(data, key=data.get)
-    return loc
+    data = {i : res_dict[i].Boltcompressionmax[0] for i in where}
+    return max(data, key=data.get)
 
 def has_Boltshearmax(where):
-    tmp_dict={}
-    for key in res_dict:
-        tmp_dict[res_dict[key].number+'i'] = res_dict[key].Boltshearimax[0]
-        tmp_dict[res_dict[key].number+'j'] = res_dict[key].Boltshearjmax[0]
-    data = {i : tmp_dict[i] for i in where}
-    loc = max(data, key=data.get)
-    return loc
+    data = {i : res_dict[i].Boltshearmax[0] for i in where}
+    return max(data, key=data.get)
 
 
 def summary():
@@ -857,12 +718,12 @@ def summary():
     report += 'Force unit - [kN], Moment unit - [kNm]'
     report += '\n\n'
 
-    report += 'SAP format general table:\n'
-    
+    report += 'STAAD format general table:\n'
     report += get_force_table(mlist) + '\n'
     report += '\n'
 
     report += 'Extreme cases list:\n'
+    report += get_extreme_force_table(mlist) + '\n'
     report += '.........\n'
     
 
@@ -878,7 +739,7 @@ def summary():
     # #print(report)
     myapp.ui.textBrowser_output.setText(report)
 
-def plot_P_M3():
+def plot_Fx_My():
     if is_data_empty():
         check()
         return None
@@ -888,6 +749,7 @@ def plot_P_M3():
     #------
     mlist = get_memberlist()
     #-
+    
     X=[res_dict[i].Pmin for i in mlist]
     Y=[res_dict[i].M3 for i in mlist]
     annotations=mlist
@@ -1171,7 +1033,7 @@ def sort_serch_list():
 
 if __name__ == '__main__':
     load_clipboard_data()
-    #m1 = res_dict['1']  
+    m1 = res_dict['1i']  
     app = QtWidgets.QApplication(sys.argv)
     myapp = MAINWINDOW()
     print_dialog = QPrintDialog()
