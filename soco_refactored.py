@@ -45,142 +45,6 @@ res_dict = []
 
 version = 'soco 0.1'
 
-# class RESPOINT():#xxxxxxxxxxxxxx
-# 
-#     def __init__(self, id=None):
-#         self.frame_number = None
-#         self.station = None
-#         self.id = id
-#         self.size = None
-#         #--
-#         self.P_list = []
-#         self.V2_list = []
-#         self.V3_list = []
-#         self.T_list = []
-#         self.M2_list = []
-#         self.M3_list = []
-# 
-#     @property
-#     def Pmax(self):
-#         return max(self.P_list)
-#     @property
-#     def Pmax_r(self):
-#         return round(self.Pmax,1)
-# 
-#     @property
-#     def Pmin(self):
-#         return min(self.P_list)
-#     @property
-#     def Pmin_r(self):
-#         return round(self.Pmin,1)
-# 
-#     @property
-#     def V2(self):
-#         return max([abs(i) for i in self.V2_list])
-#     @property
-#     def V2_r(self):
-#         return round(self.V2,1)
-# 
-#     @property
-#     def V3(self):
-#         return max([abs(i) for i in self.V3_list])
-#     @property
-#     def V3_r(self):
-#         return round(self.V3,1)
-# 
-#     @property
-#     def T(self):
-#         return max([abs(i) for i in self.T_list])
-#     @property
-#     def T_r(self):
-#         return round(self.T,1)
-# 
-#     @property
-#     def M2(self):
-#         return max([abs(i) for i in self.M2_list])
-#     @property
-#     def M2_r(self):
-#         return round(self.M2,1)
-# 
-#     @property
-#     def M3(self):
-#         return max([abs(i) for i in self.M3_list])
-#     @property
-#     def M3_r(self):
-#         return round(self.M3,1)
-# 
-#     @property
-#     def Vtot(self):
-#         Vmax = (self.V2**2 + self.V3**2)**0.5
-#         return Vmax
-#     @property
-#     def Vtot_r(self):
-#         return round(self.Vtot,1)
-# 
-#     @property
-#     def Mtot(self):
-#         Mmax = (self.M2**2 + self.M3**2)**0.5
-#         return Mmax
-#     @property
-#     def Mtot_r(self):
-#         return round(self.Mtot,1)
-# 
-#     @property
-#     def max_connection_tension(self):
-#         fp = self.Pmax / 4
-#         fm = self.M3 / 0.2 / 2
-#         f = max(fp, 0) + fm
-#         return f
-#     @property
-#     def max_connection_tension_r(self):
-#         return round(self.max_connection_tension,1)
-# 
-#     @property
-#     def max_connection_compresion(self):
-#         fp = self.Pmin / 4
-#         fm = - self.M3 / 0.2 / 2
-#         f = min(fp, 0) + fm
-#         return f
-#     @property
-#     def max_connection_compresion_r(self):
-#         return round(self.max_connection_compresion,1)
-# 
-#     @property
-#     def max_connection_shear(self):
-#         fv = self.Vtot / 4
-#         fm = self.T / 2 / (0.1**2 + 0.2**2)**0.5
-#         f = fv + fm
-#         return f
-#     @property
-#     def max_connection_shear_r(self):
-#         return round(self.max_connection_shear,1)
-#         
-#     @property
-#     def V2uplift(self):
-#         if self.station == 'i' and max([i for i in self.V2_list])>=0:
-#             return abs(max([i for i in self.V2_list]))
-#         if self.station == 'j' and min([i for i in self.V2_list])<0:
-#             return abs(min([i for i in self.V2_list]))
-#         return 0.0
-#     @property
-#     def V2uplift_r(self):
-#         return round(self.V2uplift,1)
-#         
-#     @property
-#     def V2down(self):
-#         if self.station == 'i' and min([i for i in self.V2_list])<=0:
-#             return abs(min([i for i in self.V2_list]))
-#         if self.station == 'j' and max([i for i in self.V2_list])>0:
-#             return abs(max([i for i in self.V2_list]))
-#         return 0.0
-#     @property
-#     def V2down_r(self):
-#         return round(self.V2down,1)
-
-
-
-
-
 def find_max(list=[[2,7,4], [43,3,-2]], col=2):
     maxrecord = list[0]
     for record in list:
@@ -204,7 +68,6 @@ def find_maxabs(list=[[2,7,4], [43,3,-32]], col=2):
         if abs(record[col]) > abs(maxabsrecord[col]):
             maxabsrecord = record
     return abs(maxabsrecord[col]), maxabsrecord
-        
 
 
 class MEMEB_RES():
@@ -215,6 +78,7 @@ class MEMEB_RES():
         #--
         self.res = []
         #--
+        self.colLC = 1
         self.colFx = 3
         self.colFy = 4
         self.colFz = 5
@@ -326,25 +190,46 @@ class MEMEB_RES():
 
     @property
     def Boltshearmax(self):
-        return find_maxabs(self.res, self.colmaxboltshear)        
-    
-    
+        return find_maxabs(self.res, self.colmaxboltshear)     
+        
     @property
-    def report(self):
-        record =  []
-        #--
-        record.append([str(self.number), 'Fxmax = '+str(self.Fxmax[0])] + self.Fxmax[1][1:9])
-        record.append([str(self.number), 'Fxmin = '+str(self.Fxmin[0])] + self.Fxmin[1][1:9])
-        record.append([str(self.number), 'Fymax = '+str(self.Fymax[0])] + self.Fxmax[1][1:9])        
-        record.append([str(self.number), 'Fzmax = '+str(self.Fzmax[0])] + self.Fzmax[1][1:9])   
-        record.append([str(self.number), 'Mymax = '+str(self.Mymax[0])] + self.Mxmax[1][1:9])        
-        record.append([str(self.number), 'Mzmax = '+str(self.Mzmax[0])] + self.Mzmax[1][1:9])
-        record.append([str(self.number), 'Mtoimax = '+str(self.Mtotmax[0])] + self.Mtotmax[1][1:9])
-        record.append([str(self.number), 'Vtotmax = '+str(self.Vtotmax[0])] + self.Vtotmax[1][1:9])
-        record.append([str(self.number), 'Max bolt comp'] + self.Boltcompressionmax[1][1:9])
-        record.append([str(self.number), 'Max bolt tens'] + self.Bolttensionmax[1][1:9])
-        record.append([str(self.number), 'Max bolt shear'] + self.Boltshearmax[1][1:9])
-        return record
+    def Fxmax(self):
+        return find_max(self.res, self.colFx)
+    @property
+    def Fxmin(self):
+        return find_min(self.res, self.colFx)
+
+    #---
+    @property
+    def Fxlist(self):
+        return [i[self.colFx] for i in self.res]
+    @property
+    def Fylist(self):
+        return [i[self.colFy] for i in self.res]
+    @property
+    def Fzlist(self):
+        return [i[self.colFz] for i in self.res]
+    @property
+    def Mxlist(self):
+        return [i[self.colMx] for i in self.res]
+    @property
+    def Mylist(self):
+        return [i[self.colMy] for i in self.res]
+    @property
+    def Mzlist(self):
+        return [i[self.colMz] for i in self.res]
+    @property
+    def Mtotlist(self):
+        return [i[self.colMtot] for i in self.res]
+    @property
+    def Vtotlist(self):
+        return [i[self.colVtot] for i in self.res]  
+    @property
+    def LClist(self):
+        return [i[self.colLC] for i in self.res]
+    @property
+    def numberlist(self):
+        return [self.number]*len(self.res)
 
 class MAINWINDOW(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -353,17 +238,17 @@ class MAINWINDOW(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
 
         self.ui.pushButton.clicked.connect(summary)
-        self.ui.pushButton_P_M3.clicked.connect(plot_P_M3)
-        self.ui.pushButton_P_M2.clicked.connect(plot_P_M2)
-        self.ui.pushButton_M3_M2.clicked.connect(plot_M3_M2)
-        self.ui.pushButton_V3_V2.clicked.connect(plot_V3_V2)
-        self.ui.pushButton_T_Vtot.clicked.connect(plot_T_Vtot)
+        # self.ui.pushButton_P_M3.clicked.connect(plot_P_M3)
+        # self.ui.pushButton_P_M2.clicked.connect(plot_P_M2)
+        # self.ui.pushButton_M3_M2.clicked.connect(plot_M3_M2)
+        # self.ui.pushButton_V3_V2.clicked.connect(plot_V3_V2)
+        # self.ui.pushButton_T_Vtot.clicked.connect(plot_T_Vtot)
         self.ui.pushButton_info.clicked.connect(info)
         self.ui.pushButton_print.clicked.connect(print_report)
         self.ui.pushButton_check.clicked.connect(check)
-        self.ui.actionLoadXLS.triggered.connect(load_clipboard_data)
-        self.ui.pushButton_Find.clicked.connect(find)
-        self.ui.pushButton_Sort.clicked.connect(sort_serch_list)
+        # self.ui.actionLoadXLS.triggered.connect(load_clipboard_data)
+        # self.ui.pushButton_Find.clicked.connect(find)
+        # self.ui.pushButton_Sort.clicked.connect(sort_serch_list)
         
 memb = MEMEB_RES()   
 
@@ -704,12 +589,12 @@ def has_Boltshearmax(where):
 
 
 def summary():
-    # if is_data_empty():
-    #     check()
-    #     return None
-    # if not is_data_ok():
-    #     check()
-    #     return None
+    if is_data_empty():
+        check()
+        return None
+    if not is_data_ok():
+        check()
+        return None
     #------
     mlist = get_memberlist()
     report = 'Data source - ' + '...' + '\n'
@@ -728,7 +613,7 @@ def summary():
     
 
     if myapp.ui.checkBox_idea.isChecked():
-        # factor = float(myapp.ui.lineEdit_ideafactor.text())
+        factor = float(myapp.ui.lineEdit_ideafactor.text())
         report += '\nIdea Statica format extreme cases table (with factor %s):\n'%factor
         report += '.........\n'
         # if myapp.ui.checkBox_upliftV2.isChecked():
@@ -749,15 +634,13 @@ def plot_Fx_My():
     #------
     mlist = get_memberlist()
     #-
-    
-    X=[res_dict[i].Pmin for i in mlist]
-    Y=[res_dict[i].M3 for i in mlist]
-    annotations=mlist
-
-    X+=[res_dict[i].Pmax for i in mlist]
-    Y+=[res_dict[i].M3 for i in mlist]
-    annotations+=mlist
-
+    X=[]
+    Y=[]
+    annotations=[]
+    for i in mlist:
+        X += res_dict[i].Fxlist
+        Y += [abs(j) for j in res_dict[i].Mylist]
+        annotations += res_dict[i].numberlist
     #-
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
@@ -766,13 +649,13 @@ def plot_Fx_My():
         plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
-    plt.title("P-M3", fontsize=15)
-    plt.xlabel("P [kN]")
-    plt.ylabel("M3 [kNm]")
+    plt.title("Fx-My", fontsize=15)
+    plt.xlabel("Fx [kip]")
+    plt.ylabel("My [kip-ft]")
     #-
     plt.show()
 
-def plot_P_M2():
+def plot_Fx_Mz():
     if is_data_empty():
         check()
         return None
@@ -782,14 +665,13 @@ def plot_P_M2():
     #------
     mlist = get_memberlist()
     #-
-    X=[res_dict[i].Pmin for i in mlist]
-    Y=[res_dict[i].M2 for i in mlist]
-    annotations=mlist
-
-    X+=[res_dict[i].Pmax for i in mlist]
-    Y+=[res_dict[i].M2 for i in mlist]
-    annotations+=mlist
-
+    X=[]
+    Y=[]
+    annotations=[]
+    for i in mlist:
+        X += res_dict[i].Fxlist
+        Y += [abs(j) for j in res_dict[i].Mzlist]
+        annotations += res_dict[i].numberlist
     #-
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
@@ -798,13 +680,13 @@ def plot_P_M2():
         plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
-    plt.title("P-M2", fontsize=15)
-    plt.xlabel("P [kN]")
-    plt.ylabel("M2 [kNm]")
+    plt.title("Fx-Mz", fontsize=15)
+    plt.xlabel("Fx [kip]")
+    plt.ylabel("Mz [kip-ft]")
     #-
     plt.show()
 
-def plot_M3_M2():
+def plot_Fx_Mtot():
     if is_data_empty():
         check()
         return None
@@ -814,24 +696,28 @@ def plot_M3_M2():
     #------
     mlist = get_memberlist()
     #-
-    X=[res_dict[i].M3 for i in mlist]
-    Y=[res_dict[i].M2 for i in mlist]
-    annotations=mlist
+    X=[]
+    Y=[]
+    annotations=[]
+    for i in mlist:
+        X += res_dict[i].Fxlist
+        Y += res_dict[i].Mtotlist
+        annotations += res_dict[i].numberlist
     #-
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
     #-
     for i, label in enumerate(annotations):
-        plt.text(X[i], Y[i], '   '+label, fontsize=7)
+        plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
-    plt.title("M3-M2", fontsize=15)
-    plt.xlabel("M3 [kNm]")
-    plt.ylabel("M2 [kNm]")
+    plt.title("Fx-Mtot", fontsize=15)
+    plt.xlabel("Fx [kip]")
+    plt.ylabel("Mtot [kip-ft]")
     #-
     plt.show()
 
-def plot_V3_V2():
+def plot_My_Mz():
     if is_data_empty():
         check()
         return None
@@ -841,9 +727,13 @@ def plot_V3_V2():
     #------
     mlist = get_memberlist()
     #-
-    X=[res_dict[i].V3 for i in mlist]
-    Y=[res_dict[i].V2 for i in mlist]
-    annotations=mlist
+    X=[]
+    Y=[]
+    annotations=[]
+    for i in mlist:
+        X += [abs(j) for j in res_dict[i].Mylist]
+        Y += [abs(j) for j in res_dict[i].Mzlist]
+        annotations += res_dict[i].numberlist
     #-
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
@@ -852,13 +742,13 @@ def plot_V3_V2():
         plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
-    plt.title("V3-V2", fontsize=15)
-    plt.xlabel("V3 [kN]")
-    plt.ylabel("V2[kN]")
+    plt.title("My-Mz", fontsize=15)
+    plt.xlabel("My [kip-ft]")
+    plt.ylabel("Mz [kip-ft]")
     #-
     plt.show()
 
-def plot_T_Vtot():
+def plot_Fy_Fz():
     if is_data_empty():
         check()
         return None
@@ -868,9 +758,13 @@ def plot_T_Vtot():
     #------
     mlist = get_memberlist()
     #-
-    X=[res_dict[i].Vtot for i in mlist]
-    Y=[res_dict[i].T for i in mlist]
-    annotations=mlist
+    X=[]
+    Y=[]
+    annotations=[]
+    for i in mlist:
+        X += [abs(j) for j in res_dict[i].Fylist]
+        Y += [abs(j) for j in res_dict[i].Mzlist]
+        annotations += res_dict[i].numberlist
     #-
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
@@ -879,9 +773,40 @@ def plot_T_Vtot():
         plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
-    plt.title("Vtot-T", fontsize=15)
-    plt.xlabel("Vtot [kN]")
-    plt.ylabel("T [kN]")
+    plt.title("Fx-Fz", fontsize=15)
+    plt.xlabel("Fy [kip]")
+    plt.ylabel("Fz [kip]")
+    #-
+    plt.show()
+
+def plot_Mx_Vtot():
+    if is_data_empty():
+        check()
+        return None
+    if not is_data_ok():
+        check()
+        return None
+    #------
+    mlist = get_memberlist()
+    #-
+    X=[]
+    Y=[]
+    annotations=[]
+    for i in mlist:
+        X += [abs(j) for j in res_dict[i].Mxlist]
+        Y += res_dict[i].Vtotlist
+        annotations += res_dict[i].numberlist
+    #-
+    plt.figure(figsize=(8,6))
+    plt.scatter(X,Y,s=50,color="blue")
+    #-
+    for i, label in enumerate(annotations):
+        plt.text(X[i], Y[i],'   '+label, fontsize=7)
+    plt.grid()
+    #-
+    plt.title("Mx-Vtot", fontsize=15)
+    plt.xlabel("Mx [kip]")
+    plt.ylabel("Vtot [kip]")
     #-
     plt.show()
 
@@ -899,7 +824,7 @@ def check():
     if is_data_ok():
         report += 'All data found' + '\n'
     else:
-        report += '!!! PROBLEM !!!! some data not found - please correct the list'
+        report += '!!! PROBLEM !!!! some data not found - please correct the list\n'
     report += '---------------------------------------------------------------------' + '\n'
 
     for i in get_memberlist():
@@ -938,98 +863,6 @@ You should have received a copy of the GNU General Public License along with Gis
 Copyright (C) 2021 Lukasz Laba (e-mail : lukaszlaba@gmail.com)
 '''
     myapp.ui.textBrowser_output.setText(about)
-
-
-
-def find():#xxxxxxxxxxxxxx
-
-    if not res_dict:
-        myapp.ui.textBrowser_output.setText('!!! No data loaded!!!')
-        return None
-    
-    myapp.ui.plainTextEdit_serch.clear()
-    
-    section = myapp.ui.lineEdit_section.text()
-    
-    rM2 = myapp.ui.comboBox_M2.currentIndex()
-    rM3 = myapp.ui.comboBox_M3.currentIndex()
-    rT = myapp.ui.comboBox_T.currentIndex()
-    rP = myapp.ui.comboBox_P.currentIndex()
-    rV2 = myapp.ui.comboBox_V2.currentIndex()
-    rV3 = myapp.ui.comboBox_V3.currentIndex()
-    
-    print(section, rM2, rM3, rT, rP, rV2, rV3)
-    
-    if section :
-        s_list = [i for i in res_dict.keys() if res_dict[i].size==section]
-    else:
-        s_list = res_dict.keys() 
-        
-
-    if rM2 != 1:
-        if rM2 == 2:
-            s_list = list(set(s_list) & set(    [i for i in res_dict.keys() if res_dict[i].M2<0.001]  )  )
-        if rM2 == 0:
-            s_list = list(set(s_list) & set(    [i for i in res_dict.keys() if res_dict[i].M2>0.001]  )  )
-
-    if rM3 != 1:
-        if rM3 == 2:
-            s_list = list(set(s_list) & set(    [i for i in res_dict.keys() if res_dict[i].M3<0.001]  )  )
-        if rM3 == 0:
-            s_list = list(set(s_list) & set(    [i for i in res_dict.keys() if res_dict[i].M3>0.001]  )  )
-
-    if rT != 1:
-        if rT == 2:
-            s_list = list(set(s_list) & set(    [i for i in res_dict.keys() if res_dict[i].T<0.001]  )  )
-        if rT == 0:
-            s_list = list(set(s_list) & set(    [i for i in res_dict.keys() if res_dict[i].T>0.001]  )  )
-
-    if rP != 1:       
-        if rP == 2:
-            s_list = list(    set(s_list)         & set(      [        i for i in res_dict.keys() if max(    abs(res_dict[i].Pmax), abs(res_dict[i].Pmin)    )<0.001     ]      )          )
-        if rP == 0:
-            s_list = list(    set(s_list)         & set(      [        i for i in res_dict.keys() if max(    abs(res_dict[i].Pmax), abs(res_dict[i].Pmin)    )>0.001     ]      )          )
-
-    if rV2 != 1:
-        if rV2 == 2:
-            s_list = list(set(s_list) & set(    [i for i in res_dict.keys() if res_dict[i].V2<0.001]  )  )
-        if rV2 == 0:
-            s_list = list(set(s_list) & set(    [i for i in res_dict.keys() if res_dict[i].V2>0.001]  )  )
-
-    if rV3 != 1:
-        if rV3 == 2:
-            s_list = list(set(s_list) & set(    [i for i in res_dict.keys() if res_dict[i].V3<0.001]  )  )
-        if rV3 == 0:
-            s_list = list(set(s_list) & set(    [i for i in res_dict.keys() if res_dict[i].V3>0.001]  )  )
-
-
-
-
-
-
-    out_text = ''
-    for i in s_list:
-        out_text += i + '\n'
-
-    myapp.ui.plainTextEdit_serch.clear()
-    myapp.ui.plainTextEdit_serch.insertPlainText(out_text)
-    myapp.ui.textBrowser_output.setText('')
-    if not out_text:
-        myapp.ui.textBrowser_output.setText('!!! Nothing found !!!')
-
-
-
-def sort_serch_list():
-    mlist = get_memberlist()
-    mlist.sort()
-    out_text = ''
-    for i in mlist:
-        out_text += i + '\n'
-    myapp.ui.plainTextEdit_serch.clear()
-    myapp.ui.plainTextEdit_serch.insertPlainText(out_text)
-    
-
-
 
 if __name__ == '__main__':
     load_clipboard_data()
