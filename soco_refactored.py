@@ -40,7 +40,7 @@ from mainwindow_ui import Ui_MainWindow
 opendir = os.path.dirname(__file__)#dir path for save and open
 filename = None
 
-res_dict = []
+res_dict = {}
 
 
 version = 'soco 0.1'
@@ -236,23 +236,82 @@ class MAINWINDOW(QtWidgets.QMainWindow):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
-        self.ui.pushButton.clicked.connect(summary)
-        # self.ui.pushButton_P_M3.clicked.connect(plot_P_M3)
-        # self.ui.pushButton_P_M2.clicked.connect(plot_P_M2)
-        # self.ui.pushButton_M3_M2.clicked.connect(plot_M3_M2)
-        # self.ui.pushButton_V3_V2.clicked.connect(plot_V3_V2)
-        # self.ui.pushButton_T_Vtot.clicked.connect(plot_T_Vtot)
+        #--
+        self.ui.pushButton_Report.clicked.connect(summary)
+        #--
+        self.ui.pushButton_Fx_My.clicked.connect(plot_Fx_My)
+        self.ui.pushButton_Fx_Mz.clicked.connect(plot_Fx_Mz)
+        self.ui.pushButton_Fx_Mtot.clicked.connect(plot_Fx_Mtot)
+        self.ui.pushButton_My_Mz.clicked.connect(plot_My_Mz)
+        self.ui.pushButton_Fy_Fz.clicked.connect(plot_Fy_Fz)
+        self.ui.pushButton_Mx_Vtot.clicked.connect(plot_Mx_Vtot)
+        #--
+        self.ui.pushButton_Sort.clicked.connect(sort_serch_list)
+        self.ui.pushButton_getMembers.clicked.connect(getMembers)
+        self.ui.pushButton_makei.clicked.connect(makei)
+        self.ui.pushButton_makej.clicked.connect(makej)
+        self.ui.pushButton_makeij.clicked.connect(makeij)
+        self.ui.pushButton_check.clicked.connect(check)
+        #--
+        self.ui.pushButton_clbResults.clicked.connect(clbResults)
+        self.ui.pushButton_clbMembers.clicked.connect(clbMembers)
+        self.ui.pushButton_clbNodes.clicked.connect(clbNodes)
+        #--
+        #--
         self.ui.pushButton_info.clicked.connect(info)
         self.ui.pushButton_print.clicked.connect(print_report)
-        self.ui.pushButton_check.clicked.connect(check)
-        # self.ui.actionLoadXLS.triggered.connect(load_clipboard_data)
-        # self.ui.pushButton_Find.clicked.connect(find)
-        # self.ui.pushButton_Sort.clicked.connect(sort_serch_list)
-        
-memb = MEMEB_RES()   
 
-def load_clipboard_data():
+def getMembers():
+    mlist = list(res_dict.keys())
+    mlist = [i.replace('i','') for i in mlist]
+    mlist = [i.replace('j','') for i in mlist]
+    
+    mlist = list(dict.fromkeys(mlist))
+    set_list(mlist)
+    
+
+def sort_serch_list():
+    mlist = get_memberlist()
+    mlist.sort()
+    set_list(mlist)
+
+def set_list(mlist):
+    out_text = ''
+    for i in mlist:
+        out_text += i + '\n'
+    myapp.ui.plainTextEdit_serch.clear()
+    myapp.ui.plainTextEdit_serch.insertPlainText(out_text)
+    
+    
+def makei():
+    mlist = get_memberlist()
+    mlist = [i.replace('i','') for i in mlist]
+    mlist = [i.replace('j','') for i in mlist]
+    mlist = list(dict.fromkeys(mlist))
+    mlist = [i+'i' for i in mlist]
+    set_list(mlist)
+
+def makej():
+    mlist = get_memberlist()
+    mlist = [i.replace('i','') for i in mlist]
+    mlist = [i.replace('j','') for i in mlist]
+    mlist = list(dict.fromkeys(mlist))
+    mlist = [i+'j' for i in mlist]
+    set_list(mlist)
+    
+def makeij():
+    mlist = get_memberlist()
+    mlist = [i.replace('i','') for i in mlist]
+    mlist = [i.replace('j','') for i in mlist]
+    mlist = list(dict.fromkeys(mlist))
+    outlist=[]
+    for i in mlist:
+        outlist.append(i+'i')
+        outlist.append(i+'j')
+    set_list(outlist)
+    
+    
+def clbResults():
     from tkinter import Tk
     root = Tk()
     root.withdraw()
@@ -270,7 +329,6 @@ def load_clipboard_data():
         #print(i)
         if data[i][1] == '':
             data[i][1]=data[i-1][1]
-
     #--
     for i in range(1, len(data)-1):
         record = data[i]
@@ -280,9 +338,6 @@ def load_clipboard_data():
     for i in range(1, len(data)-1):
         record = data[i]
         record[1] = record[1].split()[0]
-
-
-
     #--
     global res_dict
     res_dict = {}
@@ -309,82 +364,18 @@ def load_clipboard_data():
         end = end * -1
         res_dict[memb_i.number] = memb_i
         res_dict[memb_j.number] = memb_j
-        
-    
+    #--
     for key in res_dict:
         res_dict[key].calc_additional_forces()
-    
-        
-# def load_sap_data():#xxxxxxxxxxxxxx
-#     global opendir
-#     global filename
-#     #----asking for filename
-#     filename = QtWidgets.QFileDialog.getOpenFileName(   caption = 'Open ssmdata file',
-#                                                     directory = opendir,
-#                                                     filter = "xls' (*.xls)")[0]
-#     print(filename)
-# 
-#     filename = str(filename)
-#     if not filename == '': opendir = os.path.dirname(filename)
-# 
-#     global res_dict
-#     global NUMBER
-#     print(filename)
-#     book = xlrd.open_workbook(filename)
-#     sh = book.sheet_by_index(0)
-#     NUMBER = sh.col_values(0)
-#     
-#     while NUMBER[-1] == '':
-#         NUMBER.pop(-1)
-#     
-#     P = sh.col_values(5)[3:len(NUMBER)]
-#     V2 = sh.col_values(6)[3:len(NUMBER)]
-#     V3 = sh.col_values(7)[3:len(NUMBER)]
-#     T = sh.col_values(8)[3:len(NUMBER)]
-#     M2 = sh.col_values(9)[3:len(NUMBER)]
-#     M3 = sh.col_values(10)[3:len(NUMBER)]
-#     station = sh.col_values(14)[3:len(NUMBER)]
-#     size = sh.col_values(15)[3:len(NUMBER)]
-#     NUMBER = NUMBER[3:]
-#     for i in range(len(NUMBER)):
-#         try:
-#             NUMBER[i] = str(int(NUMBER[i]))
-#         except:
-#             pass
-#     
-#     #loading data
-# 
-#     respointid = [str(i) + str(j) for i,j in zip(NUMBER, station) if j in ['i', 'j']]
-# 
-#     respointid = list(dict.fromkeys(respointid))
-# 
-#     res_dict = {}
-# 
-#     #init main dist
-#     for i in respointid:
-#         res_dict[i] = RESPOINT(i)
-# 
-#     #load data to main dist
-#     print(len(NUMBER))
-#     print(len(station))
-#     for i in range(len(NUMBER)):
-#         this_id = str(NUMBER[i]) + str(station[i])
-#         if this_id in res_dict.keys():
-#             this_respoint = res_dict[this_id]
-#             this_respoint.frame_number = NUMBER[i]
-#             this_respoint.station = station[i]
-#             this_respoint.size = size[i]
-#             this_respoint.P_list.append(P[i])
-#             this_respoint.V2_list.append(V2[i])
-#             this_respoint.V3_list.append(V3[i])
-#             this_respoint.T_list.append(T[i])
-#             this_respoint.M2_list.append(M2[i])
-#             this_respoint.M3_list.append(M3[i])
-# 
-#     myapp.ui.textBrowser_output.setText('>>>> %s res point data loaded from %s <<<<'%(len(res_dict.keys()), os.path.basename(filename)))
-# 
-#     set_title(info = ' - ' + os.path.basename(filename))
+    #---
+    myapp.ui.textBrowser_output.setText('>>>> %s res point data loaded from %s <<<<'%(len(res_dict.keys()), ' model name '))
+    set_title(info = ' model name ')
 
+def clbMembers():
+    pass
+    
+def clbNodes():
+    pass
 
 def get_memberlist():
     text = myapp.ui.plainTextEdit_serch.toPlainText()
@@ -469,56 +460,6 @@ def get_extreme_force_table(filterlist=['1i', '1j']):
     else:
         return ''
 
-# def get_force_table_uplift(filterlist=None):#xxxxxxxxxxxxxx
-#     rows = []
-#     rows.append(['FrameEnd', 'Pmax', 'Pmin', 'V2up', 'V2down', 'V3', 'T', 'M2', 'M3', 'Size'])
-# 
-#     if filterlist:
-#         for i in filterlist:
-#             if i in res_dict.keys():
-#                 res = res_dict[i]
-#                 rows.append([i, res.Pmax_r, res.Pmin_r, res.V2uplift_r, res.V2down_r,  res.V3_r, res.T_r, res.M2_r, res.M3_r, res.size])
-#             else:
-#                 rows.append([i+'(!!)', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A'])
-#         return tabulate(rows, headers="firstrow", tablefmt="grid")
-#     else:
-#         return ''
-
-# def get_force_table_statica_format_uplift(filterlist=None, factor=1.0):#xxxxxxxxxxxxxx
-#     report = ''
-#     report += 'N\tVy\tVz\tMx\tMy\tMz\n'
-# 
-#     if filterlist:
-#         for i in filterlist:
-#             if i in res_dict.keys():
-#                 res = res_dict[i]
-#                 if res.Pmax_r != res.Pmin_r:
-#                     if res.V2uplift_r != 0:
-#                         report += str(round(res.Pmax_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(res.V2uplift_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(-res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
-#                     if res.V2down_r != 0:
-#                         report += str(round(res.Pmax_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(-res.V2down_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
-#                     if res.V2_r == 0:
-#                         report += str(round(res.Pmax_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(res.V2_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(-res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
-#                         
-#                     if res.V2uplift_r != 0:
-#                         report += str(round(res.Pmin_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(res.V2uplift_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(-res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
-#                     if res.V2down_r != 0:
-#                         report += str(round(res.Pmin_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(-res.V2down_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
-#                     if res.V2_r == 0:
-#                         report += str(round(res.Pmin_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(res.V2_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(-res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
-#                 else:
-#                     if res.V2uplift_r != 0:
-#                         report += str(round(res.Pmax_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(res.V2uplift_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(-res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
-#                     if res.V2down_r != 0:
-#                         report += str(round(res.Pmax_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(-res.V2down_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
-#                     if res.V2_r == 0:
-#                         report += str(round(res.Pmax_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(res.V2_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(-res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'                    
-#             else:
-#                 report += 'NoData/n'
-#         return report
-#     else:
-#         return ''
-
 def get_force_table_statica_format(filterlist=None, factor=1.0):
     report = ''
     report += 'N\tVy\tVz\tMx\tMy\tMz\n'
@@ -602,10 +543,11 @@ def summary():
     report += '\n\n'
     report += 'Force unit - [kN], Moment unit - [kNm]'
     report += '\n\n'
-
-    report += 'STAAD format general table:\n'
-    report += get_force_table(mlist) + '\n'
-    report += '\n'
+    
+    if myapp.ui.checkBox_full.isChecked():
+        report += 'STAAD format general table:\n'
+        report += get_force_table(mlist) + '\n'
+        report += '\n'
 
     report += 'Extreme cases list:\n'
     report += get_extreme_force_table(mlist) + '\n'
@@ -645,8 +587,9 @@ def plot_Fx_My():
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
     #-
-    for i, label in enumerate(annotations):
-        plt.text(X[i], Y[i],'   '+label, fontsize=7)
+    if myapp.ui.checkBox_pltAnnot.isChecked():
+        for i, label in enumerate(annotations):
+            plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
     plt.title("Fx-My", fontsize=15)
@@ -676,8 +619,9 @@ def plot_Fx_Mz():
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
     #-
-    for i, label in enumerate(annotations):
-        plt.text(X[i], Y[i],'   '+label, fontsize=7)
+    if myapp.ui.checkBox_pltAnnot.isChecked():
+        for i, label in enumerate(annotations):
+            plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
     plt.title("Fx-Mz", fontsize=15)
@@ -707,8 +651,9 @@ def plot_Fx_Mtot():
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
     #-
-    for i, label in enumerate(annotations):
-        plt.text(X[i], Y[i],'   '+label, fontsize=7)
+    if myapp.ui.checkBox_pltAnnot.isChecked():
+        for i, label in enumerate(annotations):
+            plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
     plt.title("Fx-Mtot", fontsize=15)
@@ -738,8 +683,9 @@ def plot_My_Mz():
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
     #-
-    for i, label in enumerate(annotations):
-        plt.text(X[i], Y[i],'   '+label, fontsize=7)
+    if myapp.ui.checkBox_pltAnnot.isChecked():
+        for i, label in enumerate(annotations):
+            plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
     plt.title("My-Mz", fontsize=15)
@@ -769,11 +715,12 @@ def plot_Fy_Fz():
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
     #-
-    for i, label in enumerate(annotations):
-        plt.text(X[i], Y[i],'   '+label, fontsize=7)
+    if myapp.ui.checkBox_pltAnnot.isChecked():
+        for i, label in enumerate(annotations):
+            plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
-    plt.title("Fx-Fz", fontsize=15)
+    plt.title("Fy-Fz", fontsize=15)
     plt.xlabel("Fy [kip]")
     plt.ylabel("Fz [kip]")
     #-
@@ -800,8 +747,9 @@ def plot_Mx_Vtot():
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
     #-
-    for i, label in enumerate(annotations):
-        plt.text(X[i], Y[i],'   '+label, fontsize=7)
+    if myapp.ui.checkBox_pltAnnot.isChecked():
+        for i, label in enumerate(annotations):
+            plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
     plt.title("Mx-Vtot", fontsize=15)
@@ -865,8 +813,8 @@ Copyright (C) 2021 Lukasz Laba (e-mail : lukaszlaba@gmail.com)
     myapp.ui.textBrowser_output.setText(about)
 
 if __name__ == '__main__':
-    load_clipboard_data()
-    m1 = res_dict['1i']  
+    # load_clipboard_data()
+    # m1 = res_dict['1i']  
     app = QtWidgets.QApplication(sys.argv)
     myapp = MAINWINDOW()
     print_dialog = QPrintDialog()
