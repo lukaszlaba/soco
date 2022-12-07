@@ -1,39 +1,34 @@
 '''
 --------------------------------------------------------------------------
-Copyright (C) 2021 Lukasz Laba <lukaszlaba@gmail.com>
+Copyright (C) 2022 Lukasz Laba <lukaszlaba@gmail.com>
 
-This file is part of Gismo.
+This file is part of soco.
 
-Gismo is free software; you can redistribute it and/or modify
+Soco is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or
 (at your option) any later version.
 
-Gismo is distributed in the hope that it will be useful,
+Soco is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Gismo; if not, write to the Free Software
+along with Soco; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 --------------------------------------------------------------------------
 
 '''
 
-
 import os
-
-#import xlrd
-from tabulate import tabulate
-
-#import numpy as np
-import matplotlib.pyplot as plt
-
 import sys
+
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 from PyQt5.QtPrintSupport import QPrintDialog
+from tabulate import tabulate
+import matplotlib.pyplot as plt
 
 from mainwindow_ui import Ui_MainWindow
 
@@ -42,8 +37,7 @@ filename = None
 
 res_dict = {}
 
-
-version = 'soco 0.1'
+version = 'soco 0.0.1'
 
 def find_max(list=[[2,7,4], [43,3,-2]], col=2):
     maxrecord = list[0]
@@ -68,7 +62,6 @@ def find_maxabs(list=[[2,7,4], [43,3,-32]], col=2):
         if abs(record[col]) > abs(maxabsrecord[col]):
             maxabsrecord = record
     return abs(maxabsrecord[col]), maxabsrecord
-
 
 class MEMEB_RES():
 
@@ -315,10 +308,9 @@ def clbResults():
     from tkinter import Tk
     root = Tk()
     root.withdraw()
-    #global data
     data = root.clipboard_get()
-    # import testdata
-    # data = testdata.data
+    #import testdata
+    #data = testdata.data
     data = data.replace("\r", '')
     data =  data.split('\n')
     for i in range(len(data)):#--each parameter
@@ -361,6 +353,10 @@ def clbResults():
             memb_i.node = record[2]
         if end == 1:
             #memb.j = record[2]
+            record[3] = -record[3] # Fx sign update at the member end
+            record[6] = -record[6] # Mx sign update at the member end
+            record[7] = -record[7] # My sign update at the member end
+            record[8] = -record[8] # Mz sign update at the member end
             memb_j.res.append(record)
             memb_j.node = record[2]
         end = end * -1
@@ -496,24 +492,24 @@ def get_extreme_force_table(filterlist=['1i', '1j']):
     else:
         return ''
 
-def get_force_table_statica_format(filterlist=None, factor=1.0):
-    report = ''
-    report += 'N\tVy\tVz\tMx\tMy\tMz\n'
-
-    if filterlist:
-        for i in filterlist:
-            if i in res_dict.keys():
-                res = res_dict[i]
-                if res.Pmax_r != res.Pmin_r:
-                    report += str(round(res.Pmax_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(-res.V2_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
-                    report += str(round(res.Pmin_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(-res.V2_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
-                else:
-                    report += str(round(res.Pmax_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(-res.V2_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'                    
-            else:
-                report += 'NoData/n'
-        return report
-    else:
-        return ''
+# def get_force_table_statica_format(filterlist=None, factor=1.0):
+#     report = ''
+#     report += 'N\tVy\tVz\tMx\tMy\tMz\n'
+# 
+#     if filterlist:
+#         for i in filterlist:
+#             if i in res_dict.keys():
+#                 res = res_dict[i]
+#                 if res.Pmax_r != res.Pmin_r:
+#                     report += str(round(res.Pmax_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(-res.V2_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
+#                     report += str(round(res.Pmin_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(-res.V2_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
+#                 else:
+#                     report += str(round(res.Pmax_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(-res.V2_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'                    
+#             else:
+#                 report += 'NoData/n'
+#         return report
+#     else:
+#         return ''
 
     
 def has_Fxmax(where):
@@ -564,7 +560,6 @@ def has_Boltshearmax(where):
     data = {i : res_dict[i].Boltshearmax[0] for i in where}
     return max(data, key=data.get)
 
-
 def summary():
     if is_data_empty():
         check()
@@ -574,7 +569,10 @@ def summary():
         return None
     #------
     mlist = get_memberlist()
-    report = 'Data source - ' + '...' + '\n'
+    report = ''
+    sourcefile = myapp.ui.lineEdit_staadname.text()
+    if sourcefile:
+        report += 'Data source - ' + sourcefile + '\n'
     report += 'Results for  - ' + str(mlist)
     report += '\n\n'
     report += 'Force unit - [kN], Moment unit - [kNm]'
@@ -588,18 +586,12 @@ def summary():
     report += 'Extreme cases list:\n'
     report += get_extreme_force_table(mlist) + '\n'
     report += '.........\n'
-    
-
-    if myapp.ui.checkBox_idea.isChecked():
-        factor = float(myapp.ui.lineEdit_ideafactor.text())
-        report += '\nIdea Statica format extreme cases table (with factor %s):\n'%factor
-        report += '.........\n'
-        # if myapp.ui.checkBox_upliftV2.isChecked():
-        #     report += get_force_table_statica_format_uplift(local_reslist, factor) + '\n'
-        # else:
-        #     report += get_force_table_statica_format(local_reslist, factor) + '\n'
-    # 
-    # #print(report)
+    #--
+    # if myapp.ui.checkBox_idea.isChecked():
+    #     factor = float(myapp.ui.lineEdit_ideafactor.text())
+    #     report += '\nIdea Statica format extreme cases table (with factor %s):\n'%factor
+    #     report += '.........\n'
+    #--
     myapp.ui.textBrowser_output.setText(report)
 
 def plot_Fx_My():
@@ -617,7 +609,7 @@ def plot_Fx_My():
     annotations=[]
     for i in mlist:
         X += res_dict[i].Fxlist
-        Y += [abs(j) for j in res_dict[i].Mylist]
+        Y += [j for j in res_dict[i].Mylist]
         annotations += res_dict[i].numberlist
     #-
     plt.figure(figsize=(8,6))
@@ -649,7 +641,7 @@ def plot_Fx_Mz():
     annotations=[]
     for i in mlist:
         X += res_dict[i].Fxlist
-        Y += [abs(j) for j in res_dict[i].Mzlist]
+        Y += [j for j in res_dict[i].Mzlist]
         annotations += res_dict[i].numberlist
     #-
     plt.figure(figsize=(8,6))
@@ -712,8 +704,8 @@ def plot_My_Mz():
     Y=[]
     annotations=[]
     for i in mlist:
-        X += [abs(j) for j in res_dict[i].Mylist]
-        Y += [abs(j) for j in res_dict[i].Mzlist]
+        X += [j for j in res_dict[i].Mylist]
+        Y += [j for j in res_dict[i].Mzlist]
         annotations += res_dict[i].numberlist
     #-
     plt.figure(figsize=(8,6))
@@ -744,8 +736,8 @@ def plot_Fy_Fz():
     Y=[]
     annotations=[]
     for i in mlist:
-        X += [abs(j) for j in res_dict[i].Fylist]
-        Y += [abs(j) for j in res_dict[i].Fzlist]
+        X += [j for j in res_dict[i].Fylist]
+        Y += [j for j in res_dict[i].Fzlist]
         annotations += res_dict[i].numberlist
     #-
     plt.figure(figsize=(8,6))
@@ -776,7 +768,7 @@ def plot_Mx_Vtot():
     Y=[]
     annotations=[]
     for i in mlist:
-        X += [abs(j) for j in res_dict[i].Mxlist]
+        X += [j for j in res_dict[i].Mxlist]
         Y += res_dict[i].Vtotlist
         annotations += res_dict[i].numberlist
     #-
@@ -837,20 +829,21 @@ def set_title(info=''):
 
 def info():
     about = '''
+Soco - Staad member force extract tool
+Alpha stage software for testing only
+
 -------------Licence-------------
-Gismo is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+Soco is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
-Gismo is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+Soco is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with Gismo; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.
+You should have received a copy of the GNU General Public License along with Soco; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.
 
-Copyright (C) 2021 Lukasz Laba (e-mail : lukaszlaba@gmail.com)
+Copyright (C) 2022 Lukasz Laba (e-mail : lukaszlaba@gmail.com)
 '''
     myapp.ui.textBrowser_output.setText(about)
 
-if __name__ == '__main__':
-    # load_clipboard_data()
-    # m1 = res_dict['1i']  
+if __name__ == '__main__': 
     app = QtWidgets.QApplication(sys.argv)
     myapp = MAINWINDOW()
     print_dialog = QPrintDialog()

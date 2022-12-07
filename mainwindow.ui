@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1367</width>
-    <height>777</height>
+    <height>764</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <x>180</x>
       <y>40</y>
       <width>1171</width>
-      <height>701</height>
+      <height>661</height>
      </rect>
     </property>
     <property name="font">
@@ -202,7 +202,7 @@ p, li { white-space: pre-wrap; }
      </rect>
     </property>
     <property name="text">
-     <string>get beam results</string>
+     <string>&gt;&gt; get beam results</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_Sort">
@@ -219,6 +219,9 @@ p, li { white-space: pre-wrap; }
     </property>
    </widget>
    <widget class="QCheckBox" name="checkBox_idea">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>370</x>
@@ -232,6 +235,9 @@ p, li { white-space: pre-wrap; }
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_ideafactor">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>520</x>
@@ -267,7 +273,7 @@ p, li { white-space: pre-wrap; }
      </rect>
     </property>
     <property name="text">
-     <string>get beam numbers</string>
+     <string>&gt;&gt; get beam numbers</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_clbNodes">
@@ -280,7 +286,7 @@ p, li { white-space: pre-wrap; }
      </rect>
     </property>
     <property name="text">
-     <string>get node numbers</string>
+     <string>&gt;&gt; get node numbers</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_getMembers">
@@ -393,6 +399,32 @@ p, li { white-space: pre-wrap; }
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QLineEdit" name="lineEdit_staadname">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>710</y>
+      <width>481</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>710</y>
+      <width>151</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Data source staad file name:</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -404,7 +436,6 @@ p, li { white-space: pre-wrap; }
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoadXLS">
    <property name="enabled">
     <bool>true</bool>

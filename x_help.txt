@@ -4,4 +4,4 @@ frozzing:
 
 cd C:\Users\LABAL\miniconda3\Scripts
 
-pyinstaller --onefile --noconsole --icon=app.ico C:\C_LUKASZLABA1\gismo\gismo.py
+pyinstaller --onefile --noconsole --icon=app.ico C:\Users\Lenovo\Dropbox\PYAPPS_STRUCT\SOURCE_SOCO\source\soco.py
