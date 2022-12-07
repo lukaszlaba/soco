@@ -315,10 +315,10 @@ def clbResults():
     from tkinter import Tk
     root = Tk()
     root.withdraw()
-    global data
-    #data = root.clipboard_get()
-    import testdata
-    data = testdata.data
+    #global data
+    data = root.clipboard_get()
+    # import testdata
+    # data = testdata.data
     data = data.replace("\r", '')
     data =  data.split('\n')
     for i in range(len(data)):#--each parameter
@@ -358,9 +358,11 @@ def clbResults():
         if end == -1:
             #memb.i = record[2]
             memb_i.res.append(record)
+            memb_i.node = record[2]
         if end == 1:
             #memb.j = record[2]
             memb_j.res.append(record)
+            memb_j.node = record[2]
         end = end * -1
         res_dict[memb_i.number] = memb_i
         res_dict[memb_j.number] = memb_j
@@ -372,10 +374,44 @@ def clbResults():
     set_title(info = ' model name ')
 
 def clbMembers():
-    pass
+    from tkinter import Tk
+    root = Tk()
+    root.withdraw()
+    data = root.clipboard_get()
+    data = data.replace("\r", '')
+    data =  data.split('\n')
+    for i in range(len(data)):#--each parameter
+        tmp = data[i].split('\t')
+        data[i] = tmp
+    mlist = [str(int(i[0])) for i in data]
+    print(mlist)
+    set_list(mlist)
     
 def clbNodes():
-    pass
+    from tkinter import Tk
+    root = Tk()
+    root.withdraw()
+    data = root.clipboard_get()
+    data = data.replace("\r", '')
+    data =  data.split('\n')
+    for i in range(len(data)):#--each parameter
+        tmp = data[i].split('\t')
+        data[i] = tmp
+    nlist = [str(int(i[0])) for i in data]
+    print(nlist)
+    mlist = get_memberlist()
+    mlist = [i.replace('i','') for i in mlist]
+    mlist = [i.replace('j','') for i in mlist]
+    mlist = list(dict.fromkeys(mlist))
+    outlist=[]
+    for i in mlist:
+        if i+'i' in res_dict.keys():
+            if res_dict[i+'i'].node in nlist:
+                outlist.append(i+'i')
+        if i+'j' in res_dict.keys():
+            if res_dict[i+'j'].node in nlist:
+                outlist.append(i+'j')
+    set_list(outlist)
 
 def get_memberlist():
     text = myapp.ui.plainTextEdit_serch.toPlainText()
@@ -709,7 +745,7 @@ def plot_Fy_Fz():
     annotations=[]
     for i in mlist:
         X += [abs(j) for j in res_dict[i].Fylist]
-        Y += [abs(j) for j in res_dict[i].Mzlist]
+        Y += [abs(j) for j in res_dict[i].Fzlist]
         annotations += res_dict[i].numberlist
     #-
     plt.figure(figsize=(8,6))
