@@ -1,7 +1,0 @@
-C:\myvenvs\struthonvenv\Scripts\pyuic5 mainwindow.ui > mainwindow_ui.py
-
-frozzing:
-
-cd C:\Users\LABAL\miniconda3\Scripts
-
-pyinstaller --onefile --noconsole --icon=app.ico C:\Users\Lenovo\Dropbox\PYAPPS_STRUCT\SOURCE_SOCO\source\soco.py

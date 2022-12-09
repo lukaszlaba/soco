@@ -1,0 +1,7 @@
+TODO:
+- update readme file
+- show selected members and nodes in staad
+- short list of critical LC
+- idea statica output
+
+Done:
