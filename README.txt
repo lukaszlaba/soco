@@ -5,7 +5,12 @@
 Changelog
 ---------
 
-Gismo 0.0.1 (alpha stage for testing)
+Soco 0.0.2 (alpha stage for testing)
+  - unit autodetection
+  - LC data added for plots
+  - Max conn comp, Max bolt tens, Max bolt shear
+
+Soco 0.0.1 (alpha stage for testing)
   - first public release
 
 License

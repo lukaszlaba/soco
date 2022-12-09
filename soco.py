@@ -36,8 +36,10 @@ opendir = os.path.dirname(__file__)#dir path for save and open
 filename = None
 
 res_dict = {}
+unit_force = '[]'
+unit_moment = '[]'
 
-version = 'soco 0.0.1'
+version = 'soco 0.0.2'
 
 def find_max(list=[[2,7,4], [43,3,-2]], col=2):
     maxrecord = list[0]
@@ -108,9 +110,16 @@ class MEMEB_RES():
             My = abs(record[self.colMy])
             Mz = abs(record[self.colMz])
             Fx = record[self.colFx]
+            #--
+            if 'ft' in unit_moment: a = 1
+            if 'in' in unit_moment: a = 12
+            if 'm' in unit_moment: a = 0.305
+            if 'mm' in unit_moment: a = 305
+            #--   
             fp = Fx / 4
-            fm = -My / 0.2 / 2 - My / 0.2 / 2
+            fm = -My / a / 2 - Mz / a / 2
             f = fp + fm
+            f = min(f,0)
             record.append(round(f, 2))
 
     def calc_bolt_maxcompression(self):
@@ -118,18 +127,38 @@ class MEMEB_RES():
             My = abs(record[self.colMy])
             Mz = abs(record[self.colMz])
             Fx = record[self.colFx]
+            #--
+            if 'ft' in unit_moment: a = 1
+            if 'in' in unit_moment: a = 12
+            if 'm' in unit_moment: a = 0.305
+            if 'mm' in unit_moment: a = 305
+            #--
             fp = Fx / 4
-            fm = My / 0.2 / 2 + My / 0.2 / 2
+            fm = My / a / 2 + Mz / a / 2
             f = fp + fm
+            f = max(f,0)
             record.append(round(f, 2))
 
     def calc_bolt_maxshear(self):
         for record in self.res:
-            Vtot = abs(record[self.colVtot])
+            Fy = abs(record[self.colFy])
+            Fz = abs(record[self.colFz])
             Mx = abs(record[self.colMx])
-            fv = Vtot / 4
-            fm = Mx / 2 / (0.1**2 + 0.2**2)**0.5
-            f = fv + fm
+            fvy = Fy / 4
+            fvz = Fz / 4
+            #--
+            if 'ft' in unit_moment: a = 1
+            if 'in' in unit_moment: a = 12
+            if 'm' in unit_moment: a = 0.305
+            if 'mm' in unit_moment: a = 305
+            #--
+            fm = Mx / 2 / (a**2 + a**2)**0.5
+            fmy = fm/2**0.5
+            fmz = fm/2**0.5
+            #--
+            fy = fvy + fmy
+            fz = fvz + fmz
+            f =(fy**2 + fz**2)**0.5
             record.append(round(f, 2))
 
     #---
@@ -216,7 +245,16 @@ class MEMEB_RES():
         return [i[self.colMtot] for i in self.res]
     @property
     def Vtotlist(self):
-        return [i[self.colVtot] for i in self.res]  
+        return [i[self.colVtot] for i in self.res]
+    @property
+    def MaxBoltmaxtensionlist(self):
+        return [i[self.colboltmaxtension] for i in self.res]
+    @property
+    def Maxboltcompressionlist(self):
+        return [i[self.colmaxboltcompression] for i in self.res] 
+    @property
+    def Maxboltshearlist(self):
+        return [i[self.colmaxboltshear] for i in self.res]  
     @property
     def LClist(self):
         return [i[self.colLC] for i in self.res]
@@ -330,6 +368,11 @@ def clbResults():
     for i in range(1, len(data)-1):
         record = data[i]
         record[1] = record[1].split()[0]
+    #--geting units
+    global unit_force
+    global unit_moment
+    unit_force = '[' + data[0][3].split()[1] + ']'
+    unit_moment = '[' + data[0][6].split()[1] + ']'
     #--
     global res_dict
     res_dict = {}
@@ -435,10 +478,12 @@ def get_force_table(filterlist=['1i', '1j']):
                 rows.append([str(res.number), 'Mzmax = '+str(res.Mzmax[0])] + res.Mzmax[1][1:9])
                 rows.append([str(res.number), 'Mtoimax = '+str(res.Mtotmax[0])] + res.Mtotmax[1][1:9])
                 rows.append([str(res.number), 'Vtotmax = '+str(res.Vtotmax[0])] + res.Vtotmax[1][1:9])
-                rows.append([str(res.number), 'Max bolt comp'] + res.Boltcompressionmax[1][1:9])
-                rows.append([str(res.number), 'Max bolt tens'] + res.Bolttensionmax[1][1:9])
-                rows.append([str(res.number), 'Max bolt shear'] + res.Boltshearmax[1][1:9])
-
+                if res.Boltcompressionmax[0] != 0:
+                    rows.append([str(res.number), 'Max conn comp'] + res.Boltcompressionmax[1][1:9])
+                if res.Bolttensionmax[0] != 0:
+                    rows.append([str(res.number), 'Max bolt tens'] + res.Bolttensionmax[1][1:9])
+                if res.Boltshearmax[0] != 0:
+                    rows.append([str(res.number), 'Max bolt shear'] + res.Boltshearmax[1][1:9])
             else:
                 rows.append([i+'(!!)', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A'])
             rows.append(['Loc', 'Type', 'LC', 'Node', 'Fx', 'Fy', 'Fz', 'Mx', 'My', 'Mz'])
@@ -480,13 +525,16 @@ def get_extreme_force_table(filterlist=['1i', '1j']):
         rows.append([str(res.number), 'Vtotmax = '+str(res.Vtotmax[0])] + res.Vtotmax[1][1:9])
         
         res = res_dict[has_Boltcompressionmax(filterlist)]
-        rows.append([str(res.number), 'Max bolt comp'] + res.Boltcompressionmax[1][1:9])
+        if res.Boltcompressionmax[0] != 0:
+            rows.append([str(res.number), 'Max conn comp'] + res.Boltcompressionmax[1][1:9])
         
         res = res_dict[has_Bolttensionmax(filterlist)]
-        rows.append([str(res.number), 'Max bolt tens'] + res.Bolttensionmax[1][1:9])
+        if res.Bolttensionmax[0] != 0:
+            rows.append([str(res.number), 'Max bolt tens'] + res.Bolttensionmax[1][1:9])
         
         res = res_dict[has_Boltshearmax(filterlist)]
-        rows.append([str(res.number), 'Max bolt shear'] + res.Boltshearmax[1][1:9])
+        if res.Boltshearmax[0] != 0:
+            rows.append([str(res.number), 'Max bolt shear'] + res.Boltshearmax[1][1:9])
         
         return tabulate(rows, headers="firstrow", tablefmt="grid")
     else:
@@ -575,7 +623,7 @@ def summary():
         report += 'Data source - ' + sourcefile + '\n'
     report += 'Results for  - ' + str(mlist)
     report += '\n\n'
-    report += 'Force unit - [kN], Moment unit - [kNm]'
+    report += 'Force unit - %s, Moment unit - %s'%(unit_force, unit_moment)
     report += '\n\n'
     
     if myapp.ui.checkBox_full.isChecked():
@@ -609,8 +657,8 @@ def plot_Fx_My():
     annotations=[]
     for i in mlist:
         X += res_dict[i].Fxlist
-        Y += [j for j in res_dict[i].Mylist]
-        annotations += res_dict[i].numberlist
+        Y += res_dict[i].Mylist
+        annotations += [res_dict[i].numberlist[j] + ' LC' + res_dict[i].LClist[j] for j in range(0, len(res_dict[i].numberlist))]
     #-
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
@@ -621,8 +669,8 @@ def plot_Fx_My():
     plt.grid()
     #-
     plt.title("Fx-My", fontsize=15)
-    plt.xlabel("Fx [kip]")
-    plt.ylabel("My [kip-ft]")
+    plt.xlabel("Fx " + unit_force)
+    plt.ylabel("My " + unit_moment)
     #-
     plt.show()
 
@@ -641,8 +689,8 @@ def plot_Fx_Mz():
     annotations=[]
     for i in mlist:
         X += res_dict[i].Fxlist
-        Y += [j for j in res_dict[i].Mzlist]
-        annotations += res_dict[i].numberlist
+        Y += res_dict[i].Mzlist
+        annotations += [res_dict[i].numberlist[j] + ' LC' + res_dict[i].LClist[j] for j in range(0, len(res_dict[i].numberlist))]
     #-
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
@@ -653,8 +701,8 @@ def plot_Fx_Mz():
     plt.grid()
     #-
     plt.title("Fx-Mz", fontsize=15)
-    plt.xlabel("Fx [kip]")
-    plt.ylabel("Mz [kip-ft]")
+    plt.xlabel("Fx " + unit_force)
+    plt.ylabel("Mz " + unit_moment)
     #-
     plt.show()
 
@@ -674,7 +722,7 @@ def plot_Fx_Mtot():
     for i in mlist:
         X += res_dict[i].Fxlist
         Y += res_dict[i].Mtotlist
-        annotations += res_dict[i].numberlist
+        annotations += [res_dict[i].numberlist[j] + ' LC' + res_dict[i].LClist[j] for j in range(0, len(res_dict[i].numberlist))]
     #-
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
@@ -685,8 +733,8 @@ def plot_Fx_Mtot():
     plt.grid()
     #-
     plt.title("Fx-Mtot", fontsize=15)
-    plt.xlabel("Fx [kip]")
-    plt.ylabel("Mtot [kip-ft]")
+    plt.xlabel("Fx " + unit_force)
+    plt.ylabel("Mtot " + unit_moment)
     #-
     plt.show()
 
@@ -704,9 +752,9 @@ def plot_My_Mz():
     Y=[]
     annotations=[]
     for i in mlist:
-        X += [j for j in res_dict[i].Mylist]
-        Y += [j for j in res_dict[i].Mzlist]
-        annotations += res_dict[i].numberlist
+        X += res_dict[i].Mylist
+        Y += res_dict[i].Mzlist
+        annotations += [res_dict[i].numberlist[j] + ' LC' + res_dict[i].LClist[j] for j in range(0, len(res_dict[i].numberlist))]
     #-
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
@@ -717,8 +765,8 @@ def plot_My_Mz():
     plt.grid()
     #-
     plt.title("My-Mz", fontsize=15)
-    plt.xlabel("My [kip-ft]")
-    plt.ylabel("Mz [kip-ft]")
+    plt.xlabel("My " + unit_moment)
+    plt.ylabel("Mz " + unit_moment)
     #-
     plt.show()
 
@@ -736,9 +784,9 @@ def plot_Fy_Fz():
     Y=[]
     annotations=[]
     for i in mlist:
-        X += [j for j in res_dict[i].Fylist]
-        Y += [j for j in res_dict[i].Fzlist]
-        annotations += res_dict[i].numberlist
+        X += res_dict[i].Fylist
+        Y += res_dict[i].Fzlist
+        annotations += [res_dict[i].numberlist[j] + ' LC' + res_dict[i].LClist[j] for j in range(0, len(res_dict[i].numberlist))]
     #-
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
@@ -749,8 +797,8 @@ def plot_Fy_Fz():
     plt.grid()
     #-
     plt.title("Fy-Fz", fontsize=15)
-    plt.xlabel("Fy [kip]")
-    plt.ylabel("Fz [kip]")
+    plt.xlabel("Fy " + unit_force)
+    plt.ylabel("Fz " + unit_force)
     #-
     plt.show()
 
@@ -768,9 +816,9 @@ def plot_Mx_Vtot():
     Y=[]
     annotations=[]
     for i in mlist:
-        X += [j for j in res_dict[i].Mxlist]
+        X += res_dict[i].Mxlist
         Y += res_dict[i].Vtotlist
-        annotations += res_dict[i].numberlist
+        annotations += [res_dict[i].numberlist[j] + ' LC' + res_dict[i].LClist[j] for j in range(0, len(res_dict[i].numberlist))]
     #-
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
@@ -781,8 +829,8 @@ def plot_Mx_Vtot():
     plt.grid()
     #-
     plt.title("Mx-Vtot", fontsize=15)
-    plt.xlabel("Mx [kip]")
-    plt.ylabel("Vtot [kip]")
+    plt.xlabel("Mx " + unit_moment)
+    plt.ylabel("Vtot " + unit_force)
     #-
     plt.show()
 
@@ -825,8 +873,6 @@ def is_data_empty():
 def set_title(info=''):
     myapp.setWindowTitle(version + info)
 
-
-
 def info():
     about = '''
 Soco - Staad member force extract tool
@@ -848,7 +894,7 @@ if __name__ == '__main__':
     myapp = MAINWINDOW()
     print_dialog = QPrintDialog()
     set_title()
-    myapp.ui.textBrowser_output.setText('Welcome in gismo SAP tool! Load data and fill input list to get report.')
+    myapp.ui.textBrowser_output.setText('Welcome in soco - Staad member force extract tool! Load data and fill input list to get report.')
     myapp.ui.plainTextEdit_serch.clear()
     myapp.setWindowIcon(QtGui.QIcon('app.ico'))
     myapp.show()
