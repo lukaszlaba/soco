@@ -4,10 +4,12 @@ TODO:
 - short list of critical LC
 - idea statica output
 - cheking if clipboard data is corect
-
-- plot Fx-Fy change in to |Fx|-|Fy|
-- plot Mx-Vtot change in to |Mx|-Vtot
-- add Fzup Fyup and plot for that
+- add Fznorm Fynorm and plot for that
 - add Mymax Mymin   Mzmax Mzmin
+- round results to .00
 Done:
+- plot Mx-Vtot change in to |Mx|-Vtot
+- plot orientation
+- plot Mx-Vtot change in to |Mx|-Vtot
+- plot Fx-Fy change in to |Fx|-|Fy|
 - list Fx Fy Fz Mx My Mz as staad internal forces

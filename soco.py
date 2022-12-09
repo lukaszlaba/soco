@@ -273,8 +273,8 @@ class MAINWINDOW(QtWidgets.QMainWindow):
         self.ui.pushButton_Fx_My.clicked.connect(plot_Fx_My)
         self.ui.pushButton_Fx_Mz.clicked.connect(plot_Fx_Mz)
         self.ui.pushButton_Fx_Mtot.clicked.connect(plot_Fx_Mtot)
-        self.ui.pushButton_My_Mz.clicked.connect(plot_My_Mz)
-        self.ui.pushButton_Fy_Fz.clicked.connect(plot_Fy_Fz)
+        self.ui.pushButton_My_Mz.clicked.connect(plot_Mz_My)
+        self.ui.pushButton_Fy_Fz.clicked.connect(plot_Fz_Fy)
         self.ui.pushButton_Mx_Vtot.clicked.connect(plot_Mx_Vtot)
         #--
         self.ui.pushButton_Sort.clicked.connect(sort_serch_list)
@@ -625,6 +625,7 @@ def summary():
         report += 'Data source - ' + sourcefile + '\n'
     report += 'Results for  - ' + str(mlist)
     report += '\n\n'
+    report += 'Fx Fy Fz Mx My Mz are Staad format member intenal forces\n'
     report += 'Force unit - %s, Moment unit - %s'%(unit_force, unit_moment)
     report += '\n\n'
     
@@ -740,7 +741,7 @@ def plot_Fx_Mtot():
     #-
     plt.show()
 
-def plot_My_Mz():
+def plot_Mz_My():
     if is_data_empty():
         check()
         return None
@@ -754,8 +755,8 @@ def plot_My_Mz():
     Y=[]
     annotations=[]
     for i in mlist:
-        X += res_dict[i].Mylist
-        Y += res_dict[i].Mzlist
+        X += res_dict[i].Mzlist
+        Y += res_dict[i].Mylist
         annotations += [res_dict[i].numberlist[j] + ' LC' + res_dict[i].LClist[j] for j in range(0, len(res_dict[i].numberlist))]
     #-
     plt.figure(figsize=(8,6))
@@ -766,13 +767,13 @@ def plot_My_Mz():
             plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
-    plt.title("My-Mz", fontsize=15)
-    plt.xlabel("My " + unit_moment)
-    plt.ylabel("Mz " + unit_moment)
+    plt.title("Mz-My", fontsize=15)
+    plt.xlabel("Mz " + unit_moment)
+    plt.ylabel("My " + unit_moment)
     #-
     plt.show()
 
-def plot_Fy_Fz():
+def plot_Fz_Fy():
     if is_data_empty():
         check()
         return None
@@ -786,9 +787,12 @@ def plot_Fy_Fz():
     Y=[]
     annotations=[]
     for i in mlist:
-        X += res_dict[i].Fylist
-        Y += res_dict[i].Fzlist
+        X += res_dict[i].Fzlist
+        Y += res_dict[i].Fylist
         annotations += [res_dict[i].numberlist[j] + ' LC' + res_dict[i].LClist[j] for j in range(0, len(res_dict[i].numberlist))]
+    #-make it abs
+    X = [abs(i) for i in X]
+    Y = [abs(i) for i in Y]
     #-
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
@@ -798,9 +802,9 @@ def plot_Fy_Fz():
             plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
-    plt.title("Fy-Fz", fontsize=15)
-    plt.xlabel("Fy " + unit_force)
-    plt.ylabel("Fz " + unit_force)
+    plt.title("|Fy|-|Fz|", fontsize=15)
+    plt.xlabel("|Fz| " + unit_force)
+    plt.ylabel("|Fy| " + unit_force)
     #-
     plt.show()
 
@@ -821,6 +825,8 @@ def plot_Mx_Vtot():
         X += res_dict[i].Mxlist
         Y += res_dict[i].Vtotlist
         annotations += [res_dict[i].numberlist[j] + ' LC' + res_dict[i].LClist[j] for j in range(0, len(res_dict[i].numberlist))]
+    #-make Mx abs
+    X = [abs(i) for i in X]
     #-
     plt.figure(figsize=(8,6))
     plt.scatter(X,Y,s=50,color="blue")
