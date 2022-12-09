@@ -3,5 +3,11 @@ TODO:
 - show selected members and nodes in staad
 - short list of critical LC
 - idea statica output
+- cheking if clipboard data is corect
 
+- plot Fx-Fy change in to |Fx|-|Fy|
+- plot Mx-Vtot change in to |Mx|-Vtot
+- add Fzup Fyup and plot for that
+- add Mymax Mymin   Mzmax Mzmin
 Done:
+- list Fx Fy Fz Mx My Mz as staad internal forces

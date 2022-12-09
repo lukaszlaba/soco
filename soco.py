@@ -363,7 +363,7 @@ def clbResults():
     for i in range(1, len(data)-1):
         record = data[i]
         for j in range(3, 9): 
-            record[j] = eval(record[j])
+            record[j] = eval(record[j].replace(',', '.'))
 
     for i in range(1, len(data)-1):
         record = data[i]
@@ -394,9 +394,11 @@ def clbResults():
             #memb.i = record[2]
             memb_i.res.append(record)
             memb_i.node = record[2]
+        #transform to internal force values instead of end forces
         if end == 1:
-            #memb.j = record[2]
             record[3] = -record[3] # Fx sign update at the member end
+            record[4] = -record[4] # Fy sign update at the member end
+            record[5] = -record[6] # Fz sign update at the member end
             record[6] = -record[6] # Mx sign update at the member end
             record[7] = -record[7] # My sign update at the member end
             record[8] = -record[8] # Mz sign update at the member end
