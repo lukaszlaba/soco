@@ -668,7 +668,7 @@ def set_title(info=''):
 
 def info():
     about = '''
-Soco - Staad member force extract tool
+Soco - Staad member result extract tool
 Alpha stage software for testing only
 
 -------------Licence-------------

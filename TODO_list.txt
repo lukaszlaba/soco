@@ -1,5 +1,4 @@
 TODO:
-- update readme file
 - show selected members and nodes in staad
 - short list of critical LC
 - idea statica output
@@ -12,6 +11,7 @@ TODO:
 - fix 'get memers list' in UI
 
 Done:
+- update readme file
 - code refactoring
 - plot Mx-Vtot change in to |Mx|-Vtot
 - plot orientation
