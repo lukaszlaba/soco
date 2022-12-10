@@ -7,7 +7,12 @@ TODO:
 - add Fznorm Fynorm and plot for that
 - add Mymax Mymin   Mzmax Mzmin
 - round results to .00
+- add full detail dev report
+
+- fix 'get memers list' in UI
+
 Done:
+- code refactoring
 - plot Mx-Vtot change in to |Mx|-Vtot
 - plot orientation
 - plot Mx-Vtot change in to |Mx|-Vtot

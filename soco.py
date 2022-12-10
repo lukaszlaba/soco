@@ -31,9 +31,7 @@ from tabulate import tabulate
 import matplotlib.pyplot as plt
 
 from mainwindow_ui import Ui_MainWindow
-
-opendir = os.path.dirname(__file__)#dir path for save and open
-filename = None
+from member_respoint import member_respoint
 
 res_dict = {}
 unit_force = '[]'
@@ -41,234 +39,13 @@ unit_moment = '[]'
 
 version = 'soco 0.0.2'
 
-def find_max(list=[[2,7,4], [43,3,-2]], col=2):
-    maxrecord = list[0]
-    for record in list:
-        #print(record)
-        if record[col] > maxrecord[col]:
-            maxrecord = record
-    return maxrecord[col], maxrecord
-
-def find_min(list=[[2,7,4], [43,3,-2]], col=2):
-    minrecord = list[0]
-    for record in list:
-        #print(record)
-        if record[col] < minrecord[col]:
-            minrecord = record
-    return minrecord[col], minrecord
-
-def find_maxabs(list=[[2,7,4], [43,3,-32]], col=2):
-    maxabsrecord = list[0]
-    for record in list:
-        #print(record)
-        if abs(record[col]) > abs(maxabsrecord[col]):
-            maxabsrecord = record
-    return abs(maxabsrecord[col]), maxabsrecord
-
-class MEMEB_RES():
-
-    def __init__(self, id=None):
-        self.number = None
-        self.node = None
-        #--
-        self.res = []
-        #--
-        self.colLC = 1
-        self.colFx = 3
-        self.colFy = 4
-        self.colFz = 5
-        self.colMx = 6
-        self.colMy = 7
-        self.colMz = 8
-        self.colMtot = 9
-        self.colVtot = 10
-        self.colboltmaxtension = 11
-        self.colmaxboltcompression = 12
-        self.colmaxboltshear = 13
-    
-    def calc_additional_forces(self):
-        self.calc_Mtot()
-        self.calc_Vtot()
-        self.calc_bolt_maxtension()
-        self.calc_bolt_maxcompression()
-        self.calc_bolt_maxshear()
-    #---
-    def calc_Mtot(self):
-        for record in self.res:
-            My = record[self.colMy]
-            Mz = record[self.colMz]
-            record.append(round((My**2 + Mz**2)**0.5, 2))
-
-    def calc_Vtot(self):
-        for record in self.res:
-            Fy = record[self.colFy]
-            Fz = record[self.colFz]
-            record.append(round((Fy**2 + Fz**2)**0.5, 2))
-
-    def calc_bolt_maxtension(self):
-        for record in self.res:
-            My = abs(record[self.colMy])
-            Mz = abs(record[self.colMz])
-            Fx = record[self.colFx]
-            #--
-            if 'ft' in unit_moment: a = 1
-            if 'in' in unit_moment: a = 12
-            if 'm' in unit_moment: a = 0.305
-            if 'mm' in unit_moment: a = 305
-            #--   
-            fp = Fx / 4
-            fm = -My / a / 2 - Mz / a / 2
-            f = fp + fm
-            f = min(f,0)
-            record.append(round(f, 2))
-
-    def calc_bolt_maxcompression(self):
-        for record in self.res:
-            My = abs(record[self.colMy])
-            Mz = abs(record[self.colMz])
-            Fx = record[self.colFx]
-            #--
-            if 'ft' in unit_moment: a = 1
-            if 'in' in unit_moment: a = 12
-            if 'm' in unit_moment: a = 0.305
-            if 'mm' in unit_moment: a = 305
-            #--
-            fp = Fx / 4
-            fm = My / a / 2 + Mz / a / 2
-            f = fp + fm
-            f = max(f,0)
-            record.append(round(f, 2))
-
-    def calc_bolt_maxshear(self):
-        for record in self.res:
-            Fy = abs(record[self.colFy])
-            Fz = abs(record[self.colFz])
-            Mx = abs(record[self.colMx])
-            fvy = Fy / 4
-            fvz = Fz / 4
-            #--
-            if 'ft' in unit_moment: a = 1
-            if 'in' in unit_moment: a = 12
-            if 'm' in unit_moment: a = 0.305
-            if 'mm' in unit_moment: a = 305
-            #--
-            fm = Mx / 2 / (a**2 + a**2)**0.5
-            fmy = fm/2**0.5
-            fmz = fm/2**0.5
-            #--
-            fy = fvy + fmy
-            fz = fvz + fmz
-            f =(fy**2 + fz**2)**0.5
-            record.append(round(f, 2))
-
-    #---
-    @property
-    def Fxmax(self):
-        return find_max(self.res, self.colFx)
-    @property
-    def Fxmin(self):
-        return find_min(self.res, self.colFx)
-
-
-    @property
-    def Fymax(self):
-        return find_maxabs(self.res, self.colFy)
-        
-    @property
-    def Fzmax(self):
-        return find_maxabs(self.res, self.colFz)
-
-    @property
-    def Mxmax(self):
-        return find_maxabs(self.res, self.colMx)
-
-    @property
-    def Mymax(self):
-        return find_maxabs(self.res, self.colMy)
-
-    @property
-    def Mzmax(self):
-        return find_maxabs(self.res, self.colMz)
-
-    @property
-    def Mzmax(self):
-        return find_maxabs(self.res, self.colMz)
-        
-    @property
-    def Mtotmax(self):
-        return find_maxabs(self.res, self.colMtot)
-
-    @property
-    def Vtotmax(self):
-        return find_maxabs(self.res, self.colVtot)
-
-    @property
-    def Bolttensionmax(self):
-        return find_maxabs(self.res, self.colboltmaxtension)
-        
-    @property
-    def Boltcompressionmax(self):
-        return find_maxabs(self.res, self.colmaxboltcompression)
-
-    @property
-    def Boltshearmax(self):
-        return find_maxabs(self.res, self.colmaxboltshear)     
-        
-    @property
-    def Fxmax(self):
-        return find_max(self.res, self.colFx)
-    @property
-    def Fxmin(self):
-        return find_min(self.res, self.colFx)
-
-    #---
-    @property
-    def Fxlist(self):
-        return [i[self.colFx] for i in self.res]
-    @property
-    def Fylist(self):
-        return [i[self.colFy] for i in self.res]
-    @property
-    def Fzlist(self):
-        return [i[self.colFz] for i in self.res]
-    @property
-    def Mxlist(self):
-        return [i[self.colMx] for i in self.res]
-    @property
-    def Mylist(self):
-        return [i[self.colMy] for i in self.res]
-    @property
-    def Mzlist(self):
-        return [i[self.colMz] for i in self.res]
-    @property
-    def Mtotlist(self):
-        return [i[self.colMtot] for i in self.res]
-    @property
-    def Vtotlist(self):
-        return [i[self.colVtot] for i in self.res]
-    @property
-    def MaxBoltmaxtensionlist(self):
-        return [i[self.colboltmaxtension] for i in self.res]
-    @property
-    def Maxboltcompressionlist(self):
-        return [i[self.colmaxboltcompression] for i in self.res] 
-    @property
-    def Maxboltshearlist(self):
-        return [i[self.colmaxboltshear] for i in self.res]  
-    @property
-    def LClist(self):
-        return [i[self.colLC] for i in self.res]
-    @property
-    def numberlist(self):
-        return [self.number]*len(self.res)
-
 class MAINWINDOW(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         #--
-        self.ui.pushButton_Report.clicked.connect(summary)
+        self.ui.pushButton_Report.clicked.connect(show_report)
         #--
         self.ui.pushButton_Fx_My.clicked.connect(plot_Fx_My)
         self.ui.pushButton_Fx_Mz.clicked.connect(plot_Fx_Mz)
@@ -277,12 +54,12 @@ class MAINWINDOW(QtWidgets.QMainWindow):
         self.ui.pushButton_Fy_Fz.clicked.connect(plot_Fz_Fy)
         self.ui.pushButton_Mx_Vtot.clicked.connect(plot_Mx_Vtot)
         #--
-        self.ui.pushButton_Sort.clicked.connect(sort_serch_list)
-        self.ui.pushButton_getMembers.clicked.connect(getMembers)
+        self.ui.pushButton_Sort.clicked.connect(sort_memberlist)
+        self.ui.pushButton_getMembers.clicked.connect(load_memberlist_from_results)
         self.ui.pushButton_makei.clicked.connect(makei)
         self.ui.pushButton_makej.clicked.connect(makej)
         self.ui.pushButton_makeij.clicked.connect(makeij)
-        self.ui.pushButton_check.clicked.connect(check)
+        self.ui.pushButton_check.clicked.connect(check_memberlist)
         #--
         self.ui.pushButton_clbResults.clicked.connect(clbResults)
         self.ui.pushButton_clbMembers.clicked.connect(clbMembers)
@@ -292,63 +69,13 @@ class MAINWINDOW(QtWidgets.QMainWindow):
         self.ui.pushButton_info.clicked.connect(info)
         self.ui.pushButton_print.clicked.connect(print_report)
 
-def getMembers():
-    mlist = list(res_dict.keys())
-    mlist = [i.replace('i','') for i in mlist]
-    mlist = [i.replace('j','') for i in mlist]
-    
-    mlist = list(dict.fromkeys(mlist))
-    set_list(mlist)
-    
-
-def sort_serch_list():
-    mlist = get_memberlist()
-    mlist.sort()
-    set_list(mlist)
-
-def set_list(mlist):
-    out_text = ''
-    for i in mlist:
-        out_text += i + '\n'
-    myapp.ui.plainTextEdit_serch.clear()
-    myapp.ui.plainTextEdit_serch.insertPlainText(out_text)
-    
-    
-def makei():
-    mlist = get_memberlist()
-    mlist = [i.replace('i','') for i in mlist]
-    mlist = [i.replace('j','') for i in mlist]
-    mlist = list(dict.fromkeys(mlist))
-    mlist = [i+'i' for i in mlist]
-    set_list(mlist)
-
-def makej():
-    mlist = get_memberlist()
-    mlist = [i.replace('i','') for i in mlist]
-    mlist = [i.replace('j','') for i in mlist]
-    mlist = list(dict.fromkeys(mlist))
-    mlist = [i+'j' for i in mlist]
-    set_list(mlist)
-    
-def makeij():
-    mlist = get_memberlist()
-    mlist = [i.replace('i','') for i in mlist]
-    mlist = [i.replace('j','') for i in mlist]
-    mlist = list(dict.fromkeys(mlist))
-    outlist=[]
-    for i in mlist:
-        outlist.append(i+'i')
-        outlist.append(i+'j')
-    set_list(outlist)
-    
-    
 def clbResults():
-    from tkinter import Tk
-    root = Tk()
-    root.withdraw()
-    data = root.clipboard_get()
-    #import testdata
-    #data = testdata.data
+    # from tkinter import Tk
+    # root = Tk()
+    # root.withdraw()
+    #data = root.clipboard_get()
+    import testdata
+    data = testdata.data
     data = data.replace("\r", '')
     data =  data.split('\n')
     for i in range(len(data)):#--each parameter
@@ -384,8 +111,8 @@ def clbResults():
         #print(record)
         if record[0] != '':
             #print ('new-------')
-            memb_i = MEMEB_RES()
-            memb_j = MEMEB_RES()
+            memb_i = member_respoint()
+            memb_j = member_respoint()
             curent_mem_number = record[0]
             memb_i.number = curent_mem_number + 'i'
             memb_j.number = curent_mem_number + 'j'
@@ -409,6 +136,8 @@ def clbResults():
         res_dict[memb_j.number] = memb_j
     #--
     for key in res_dict:
+        res_dict[key].unit_force = unit_force
+        res_dict[key].unit_moment = unit_moment
         res_dict[key].calc_additional_forces()
     #---
     myapp.ui.textBrowser_output.setText('>>>> %s res point data loaded from %s <<<<'%(len(res_dict.keys()), ' model name '))
@@ -426,7 +155,7 @@ def clbMembers():
         data[i] = tmp
     mlist = [str(int(i[0])) for i in data]
     print(mlist)
-    set_list(mlist)
+    set_memberlist(mlist)
     
 def clbNodes():
     from tkinter import Tk
@@ -452,7 +181,36 @@ def clbNodes():
         if i+'j' in res_dict.keys():
             if res_dict[i+'j'].node in nlist:
                 outlist.append(i+'j')
-    set_list(outlist)
+    set_memberlist(outlist)
+
+#-----------------------------------------------------------
+
+def makei():
+    mlist = get_memberlist()
+    mlist = [i.replace('i','') for i in mlist]
+    mlist = [i.replace('j','') for i in mlist]
+    mlist = list(dict.fromkeys(mlist))
+    mlist = [i+'i' for i in mlist]
+    set_memberlist(mlist)
+
+def makej():
+    mlist = get_memberlist()
+    mlist = [i.replace('i','') for i in mlist]
+    mlist = [i.replace('j','') for i in mlist]
+    mlist = list(dict.fromkeys(mlist))
+    mlist = [i+'j' for i in mlist]
+    set_memberlist(mlist)
+    
+def makeij():
+    mlist = get_memberlist()
+    mlist = [i.replace('i','') for i in mlist]
+    mlist = [i.replace('j','') for i in mlist]
+    mlist = list(dict.fromkeys(mlist))
+    outlist=[]
+    for i in mlist:
+        outlist.append(i+'i')
+        outlist.append(i+'j')
+    set_memberlist(outlist)
 
 def get_memberlist():
     text = myapp.ui.plainTextEdit_serch.toPlainText()
@@ -462,6 +220,109 @@ def get_memberlist():
         memberlist.remove('')
     memberlist = ["".join(i.rstrip().lstrip()) for i in memberlist] # delete spaces at start and end
     return memberlist
+
+def set_memberlist(mlist):
+    out_text = ''
+    for i in mlist:
+        out_text += i + '\n'
+    myapp.ui.plainTextEdit_serch.clear()
+    myapp.ui.plainTextEdit_serch.insertPlainText(out_text)
+
+def sort_memberlist():
+    mlist = get_memberlist()
+    mlist.sort()
+    set_memberlist(mlist)
+
+def check_memberlist():
+    report = ''
+    if is_memberlist_empty():
+        report += '!!! Search list is empty -add some items !!!'
+        myapp.ui.textBrowser_output.setText(report)
+        return None
+
+    if data_for_memberlist_exist():
+        report += 'All data found' + '\n'
+    else:
+        report += '!!! PROBLEM !!!! some data not found - please correct the list\n'
+    report += '---------------------------------------------------------------------' + '\n'
+
+    for i in get_memberlist():
+        if i in res_dict.keys():
+            report += str(i) + ' - ok\n'
+        else:
+            report += str(i) + ' - !!!!!!NO DATA FOUND!!!!!!!<<<<<<<<<<<<<<<<<<<<<<\n'
+    myapp.ui.textBrowser_output.setText(report)
+
+def is_memberlist_empty():
+    if get_memberlist():
+        return False
+    else:
+        return True
+
+def data_for_memberlist_exist():
+    if list(set(get_memberlist())-set(res_dict.keys())):
+        return False
+    else:
+        return True
+
+def load_memberlist_from_results():
+    mlist = list(res_dict.keys())
+    mlist = [i.replace('i','') for i in mlist]
+    mlist = [i.replace('j','') for i in mlist]
+    mlist = list(dict.fromkeys(mlist))
+    set_memberlist(mlist)
+
+#-----------------------------------------------------------
+    
+def has_Fxmax(where):
+    data = {i : res_dict[i].Fxmax[0] for i in where}
+    return max(data, key=data.get)
+
+def has_Fxmin(where):
+    data = {i : res_dict[i].Fxmin[0] for i in where}
+    return min(data, key=data.get)
+
+def has_Fymax(where):
+    data = {i : res_dict[i].Fymax[0] for i in where}
+    return max(data, key=data.get)
+
+def has_Fzmax(where):
+    data = {i : res_dict[i].Fzmax[0] for i in where}
+    return max(data, key=data.get)
+
+def has_Mxmax(where):
+    data = {i : res_dict[i].Mxmax[0] for i in where}
+    return max(data, key=data.get)
+
+def has_Mymax(where):
+    data = {i : res_dict[i].Mymax[0] for i in where}
+    return max(data, key=data.get)
+
+def has_Mzmax(where):
+    data = {i : res_dict[i].Mzmax[0] for i in where}
+    return max(data, key=data.get)
+
+def has_Mtotmax(where):
+    data = {i : res_dict[i].Mtotmax[0] for i in where}
+    return max(data, key=data.get)
+
+def has_Vtotmax(where):
+    data = {i : res_dict[i].Vtotmax[0] for i in where}
+    return max(data, key=data.get)
+
+def has_Bolttensionmax(where):
+    data = {i : res_dict[i].Bolttensionmax[0] for i in where}
+    return max(data, key=data.get)
+
+def has_Boltcompressionmax(where):
+    data = {i : res_dict[i].Boltcompressionmax[0] for i in where}
+    return max(data, key=data.get)
+
+def has_Boltshearmax(where):
+    data = {i : res_dict[i].Boltshearmax[0] for i in where}
+    return max(data, key=data.get)
+
+#-----------------------------------------------------------
 
 def get_force_table(filterlist=['1i', '1j']):
     rows = []
@@ -561,61 +422,13 @@ def get_extreme_force_table(filterlist=['1i', '1j']):
 #     else:
 #         return ''
 
-    
-def has_Fxmax(where):
-    data = {i : res_dict[i].Fxmax[0] for i in where}
-    return max(data, key=data.get)
 
-def has_Fxmin(where):
-    data = {i : res_dict[i].Fxmin[0] for i in where}
-    return min(data, key=data.get)
-
-def has_Fymax(where):
-    data = {i : res_dict[i].Fymax[0] for i in where}
-    return max(data, key=data.get)
-
-def has_Fzmax(where):
-    data = {i : res_dict[i].Fzmax[0] for i in where}
-    return max(data, key=data.get)
-
-def has_Mxmax(where):
-    data = {i : res_dict[i].Mxmax[0] for i in where}
-    return max(data, key=data.get)
-
-def has_Mymax(where):
-    data = {i : res_dict[i].Mymax[0] for i in where}
-    return max(data, key=data.get)
-
-def has_Mzmax(where):
-    data = {i : res_dict[i].Mzmax[0] for i in where}
-    return max(data, key=data.get)
-
-def has_Mtotmax(where):
-    data = {i : res_dict[i].Mtotmax[0] for i in where}
-    return max(data, key=data.get)
-
-def has_Vtotmax(where):
-    data = {i : res_dict[i].Vtotmax[0] for i in where}
-    return max(data, key=data.get)
-
-def has_Bolttensionmax(where):
-    data = {i : res_dict[i].Bolttensionmax[0] for i in where}
-    return max(data, key=data.get)
-
-def has_Boltcompressionmax(where):
-    data = {i : res_dict[i].Boltcompressionmax[0] for i in where}
-    return max(data, key=data.get)
-
-def has_Boltshearmax(where):
-    data = {i : res_dict[i].Boltshearmax[0] for i in where}
-    return max(data, key=data.get)
-
-def summary():
-    if is_data_empty():
-        check()
+def show_report():
+    if is_memberlist_empty():
+        check_memberlist()
         return None
-    if not is_data_ok():
-        check()
+    if not data_for_memberlist_exist():
+        check_memberlist()
         return None
     #------
     mlist = get_memberlist()
@@ -645,12 +458,14 @@ def summary():
     #--
     myapp.ui.textBrowser_output.setText(report)
 
+#-----------------------------------------------------------
+
 def plot_Fx_My():
-    if is_data_empty():
-        check()
+    if is_memberlist_empty():
+        check_memberlist()
         return None
-    if not is_data_ok():
-        check()
+    if not data_for_memberlist_exist():
+        check_memberlist()
         return None
     #------
     mlist = get_memberlist()
@@ -678,11 +493,11 @@ def plot_Fx_My():
     plt.show()
 
 def plot_Fx_Mz():
-    if is_data_empty():
-        check()
+    if is_memberlist_empty():
+        check_memberlist()
         return None
-    if not is_data_ok():
-        check()
+    if not data_for_memberlist_exist():
+        check_memberlist()
         return None
     #------
     mlist = get_memberlist()
@@ -710,11 +525,11 @@ def plot_Fx_Mz():
     plt.show()
 
 def plot_Fx_Mtot():
-    if is_data_empty():
-        check()
+    if is_memberlist_empty():
+        check_memberlist()
         return None
-    if not is_data_ok():
-        check()
+    if not data_for_memberlist_exist():
+        check_memberlist()
         return None
     #------
     mlist = get_memberlist()
@@ -742,11 +557,11 @@ def plot_Fx_Mtot():
     plt.show()
 
 def plot_Mz_My():
-    if is_data_empty():
-        check()
+    if is_memberlist_empty():
+        check_memberlist()
         return None
-    if not is_data_ok():
-        check()
+    if not data_for_memberlist_exist():
+        check_memberlist()
         return None
     #------
     mlist = get_memberlist()
@@ -774,11 +589,11 @@ def plot_Mz_My():
     plt.show()
 
 def plot_Fz_Fy():
-    if is_data_empty():
-        check()
+    if is_memberlist_empty():
+        check_memberlist()
         return None
-    if not is_data_ok():
-        check()
+    if not data_for_memberlist_exist():
+        check_memberlist()
         return None
     #------
     mlist = get_memberlist()
@@ -809,11 +624,11 @@ def plot_Fz_Fy():
     plt.show()
 
 def plot_Mx_Vtot():
-    if is_data_empty():
-        check()
+    if is_memberlist_empty():
+        check_memberlist()
         return None
-    if not is_data_ok():
-        check()
+    if not data_for_memberlist_exist():
+        check_memberlist()
         return None
     #------
     mlist = get_memberlist()
@@ -842,41 +657,11 @@ def plot_Mx_Vtot():
     #-
     plt.show()
 
+#-----------------------------------------------------------
+
 def print_report():
     if print_dialog.exec_() == QtWidgets.QDialog.Accepted:
         myapp.ui.textBrowser_output.document().print_(print_dialog.printer())
-
-def check():
-    report = ''
-    if is_data_empty():
-        report += '!!! Search list is empty -add some items !!!'
-        myapp.ui.textBrowser_output.setText(report)
-        return None
-
-    if is_data_ok():
-        report += 'All data found' + '\n'
-    else:
-        report += '!!! PROBLEM !!!! some data not found - please correct the list\n'
-    report += '---------------------------------------------------------------------' + '\n'
-
-    for i in get_memberlist():
-        if i in res_dict.keys():
-            report += str(i) + ' - ok\n'
-        else:
-            report += str(i) + ' - !!!!!!NO DATA FOUND!!!!!!!<<<<<<<<<<<<<<<<<<<<<<\n'
-    myapp.ui.textBrowser_output.setText(report)
-
-def is_data_ok():
-    if list(set(get_memberlist())-set(res_dict.keys())):
-        return False
-    else:
-        return True
-
-def is_data_empty():
-    if get_memberlist():
-        return False
-    else:
-        return True
 
 def set_title(info=''):
     myapp.setWindowTitle(version + info)
