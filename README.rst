@@ -1,5 +1,5 @@
-Soco - Staad member force extract tool
---------------------------------------
+Soco - Staad member result extract tool
+---------------------------------------
 
 `Download binaries for Windows <https://github.com/lukaszlaba/soco/releases>`_
 
@@ -19,7 +19,7 @@ Soco 0.0.1 (alpha stage for testing)
 Description
 -----------
 
-Soco is a tool that help analyse Staad member forces output. Soco output report and plots make easy to find extreme member forces needed for connection design.
+Soco is a tool that help analyse Staad member results. Soco output report and plots make easy to find extreme member forces needed for connection design.
 
 Requirements
 ------------
