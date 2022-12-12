@@ -3,14 +3,20 @@ TODO:
 - short list of critical LC
 - idea statica output
 - cheking if clipboard data is corect
-- add Fznorm Fynorm and plot for that
+- selecting which extremes should be reported
+- add data option
 - add Mymax Mymin   Mzmax Mzmin
 - round results to .00
 - add full detail dev report
+- plot axis proportion
 
-- fix 'get memers list' in UI
+In progress
+- max and min 0 issue
 
 Done:
+- add Mymax Mymin   Mzmax Mzmin
+- add Fznorm Fynorm and plot for that
+- fix 'get memers list' in UI
 - update readme file
 - code refactoring
 - plot Mx-Vtot change in to |Mx|-Vtot

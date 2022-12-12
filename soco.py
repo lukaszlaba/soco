@@ -52,7 +52,9 @@ class MAINWINDOW(QtWidgets.QMainWindow):
         self.ui.pushButton_Fx_Mtot.clicked.connect(plot_Fx_Mtot)
         self.ui.pushButton_My_Mz.clicked.connect(plot_Mz_My)
         self.ui.pushButton_Fy_Fz.clicked.connect(plot_Fz_Fy)
+        self.ui.pushButton_normFy_Fz.clicked.connect(plot_norm_Fz_Fy)
         self.ui.pushButton_Mx_Vtot.clicked.connect(plot_Mx_Vtot)
+        
         #--
         self.ui.pushButton_Sort.clicked.connect(sort_memberlist)
         self.ui.pushButton_getMembers.clicked.connect(load_memberlist_from_results)
@@ -277,31 +279,42 @@ def load_memberlist_from_results():
 def has_Fxmax(where):
     data = {i : res_dict[i].Fxmax[0] for i in where}
     return max(data, key=data.get)
-
 def has_Fxmin(where):
     data = {i : res_dict[i].Fxmin[0] for i in where}
     return min(data, key=data.get)
 
-def has_Fymax(where):
-    data = {i : res_dict[i].Fymax[0] for i in where}
+def has_Fymaxabs(where):
+    data = {i : res_dict[i].Fymaxabs[0] for i in where}
     return max(data, key=data.get)
 
-def has_Fzmax(where):
-    data = {i : res_dict[i].Fzmax[0] for i in where}
+def has_Fzmaxabs(where):
+    data = {i : res_dict[i].Fzmaxabs[0] for i in where}
     return max(data, key=data.get)
 
-def has_Mxmax(where):
-    data = {i : res_dict[i].Mxmax[0] for i in where}
+def has_Mxmaxabs(where):
+    data = {i : res_dict[i].Mxmaxabs[0] for i in where}
+    return max(data, key=data.get)     
+    
+def has_Mymaxabs(where):
+    data = {i : res_dict[i].Mymaxabs[0] for i in where}
     return max(data, key=data.get)
-
 def has_Mymax(where):
     data = {i : res_dict[i].Mymax[0] for i in where}
     return max(data, key=data.get)
+def has_Mymin(where):
+    data = {i : res_dict[i].Mymin[0] for i in where}
+    return min(data, key=data.get)
 
+def has_Mzmaxabs(where):
+    data = {i : res_dict[i].Mzmaxabs[0] for i in where}
+    return max(data, key=data.get)
 def has_Mzmax(where):
     data = {i : res_dict[i].Mzmax[0] for i in where}
     return max(data, key=data.get)
-
+def has_Mzmin(where):
+    data = {i : res_dict[i].Mzmin[0] for i in where}
+    return min(data, key=data.get)    
+    
 def has_Mtotmax(where):
     data = {i : res_dict[i].Mtotmax[0] for i in where}
     return max(data, key=data.get)
@@ -322,6 +335,24 @@ def has_Boltshearmax(where):
     data = {i : res_dict[i].Boltshearmax[0] for i in where}
     return max(data, key=data.get)
 
+def has_Boltshearmax(where):
+    data = {i : res_dict[i].Boltshearmax[0] for i in where}
+    return max(data, key=data.get)
+
+def has_Fynormmax(where):
+    data = {i : res_dict[i].Fynormmax[0] for i in where}
+    return max(data, key=data.get)
+def has_Fynormmin(where):
+    data = {i : res_dict[i].Fynormmin[0] for i in where}
+    return min(data, key=data.get)
+
+def has_Fznormmax(where):
+    data = {i : res_dict[i].Fznormmax[0] for i in where}
+    return max(data, key=data.get)
+def has_Fznormmin(where):
+    data = {i : res_dict[i].Fznormmin[0] for i in where}
+    return min(data, key=data.get)
+
 #-----------------------------------------------------------
 
 def get_force_table(filterlist=['1i', '1j']):
@@ -332,21 +363,29 @@ def get_force_table(filterlist=['1i', '1j']):
         for i in filterlist:
             if i in res_dict.keys():
                 res = res_dict[i]
-                rows.append([str(res.number), 'Fxmax = '+str(res.Fxmax[0])] + res.Fxmax[1][1:9])
-                rows.append([str(res.number), 'Fxmin = '+str(res.Fxmin[0])] + res.Fxmin[1][1:9])
-                rows.append([str(res.number), 'Fymax = '+str(res.Fymax[0])] + res.Fymax[1][1:9])        
-                rows.append([str(res.number), 'Fzmax = '+str(res.Fzmax[0])] + res.Fzmax[1][1:9]) 
-                rows.append([str(res.number), 'Mxmax = '+str(res.Mxmax[0])] + res.Mxmax[1][1:9])    
-                rows.append([str(res.number), 'Mymax = '+str(res.Mymax[0])] + res.Mymax[1][1:9])        
-                rows.append([str(res.number), 'Mzmax = '+str(res.Mzmax[0])] + res.Mzmax[1][1:9])
-                rows.append([str(res.number), 'Mtoimax = '+str(res.Mtotmax[0])] + res.Mtotmax[1][1:9])
-                rows.append([str(res.number), 'Vtotmax = '+str(res.Vtotmax[0])] + res.Vtotmax[1][1:9])
+                rows.append([str(res.number), 'max Fx = '+str(res.Fxmax[0])] + res.Fxmax[1][1:9])
+                rows.append([str(res.number), 'min Fx = '+str(res.Fxmin[0])] + res.Fxmin[1][1:9])
+                rows.append([str(res.number), 'max |Fy| = '+str(res.Fymaxabs[0])] + res.Fymaxabs[1][1:9])      
+                rows.append([str(res.number), 'max |Fz| = '+str(res.Fzmaxabs[0])] + res.Fzmaxabs[1][1:9]) 
+                rows.append([str(res.number), 'max |Mx| = '+str(res.Mxmaxabs[0])] + res.Mxmaxabs[1][1:9]) 
+                rows.append([str(res.number), 'max |My| = '+str(res.Mymaxabs[0])] + res.Mymaxabs[1][1:9])
+                rows.append([str(res.number), 'max My = '+str(res.Mymax[0])] + res.Mymax[1][1:9])                
+                rows.append([str(res.number), 'min My = '+str(res.Mymin[0])] + res.Mymin[1][1:9])   
+                rows.append([str(res.number), 'max |Mz| = '+str(res.Mzmaxabs[0])] + res.Mzmaxabs[1][1:9])
+                rows.append([str(res.number), 'max Mz = '+str(res.Mzmax[0])] + res.Mzmax[1][1:9])                
+                rows.append([str(res.number), 'min Mz = '+str(res.Mzmin[0])] + res.Mzmin[1][1:9]) 
+                rows.append([str(res.number), 'max |Mtot| = '+str(res.Mtotmax[0])] + res.Mtotmax[1][1:9])
+                rows.append([str(res.number), 'max |Vtot| = '+str(res.Vtotmax[0])] + res.Vtotmax[1][1:9])
                 if res.Boltcompressionmax[0] != 0:
-                    rows.append([str(res.number), 'Max conn comp'] + res.Boltcompressionmax[1][1:9])
+                    rows.append([str(res.number), 'max conn comp (N-M)'] + res.Boltcompressionmax[1][1:9])
                 if res.Bolttensionmax[0] != 0:
-                    rows.append([str(res.number), 'Max bolt tens'] + res.Bolttensionmax[1][1:9])
+                    rows.append([str(res.number), 'max bolt tens (N-M)'] + res.Bolttensionmax[1][1:9])
                 if res.Boltshearmax[0] != 0:
-                    rows.append([str(res.number), 'Max bolt shear'] + res.Boltshearmax[1][1:9])
+                    rows.append([str(res.number), 'max bolt shear (V-T)'] + res.Boltshearmax[1][1:9])
+                rows.append([str(res.number), 'max Fynorm = '+str(res.Fynormmax[0])] + res.Fynormmax[1][1:9])
+                rows.append([str(res.number), 'min Fynorm = '+str(res.Fynormmin[0])] + res.Fynormmin[1][1:9])
+                rows.append([str(res.number), 'max Fznorm = '+str(res.Fznormmax[0])] + res.Fznormmax[1][1:9])
+                rows.append([str(res.number), 'min Fznorm = '+str(res.Fznormmin[0])] + res.Fznormmin[1][1:9]) 
             else:
                 rows.append([i+'(!!)', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A'])
             rows.append(['Loc', 'Type', 'LC', 'Node', 'Fx', 'Fy', 'Fz', 'Mx', 'My', 'Mz'])
@@ -361,43 +400,124 @@ def get_extreme_force_table(filterlist=['1i', '1j']):
     # 
     if filterlist:
         res = res_dict[has_Fxmax(filterlist)]
-        rows.append([str(res.number), 'Fxmax = '+str(res.Fxmax[0])] + res.Fxmax[1][1:9])
-        
-        res = res_dict[has_Fxmin(filterlist)]
-        rows.append([str(res.number), 'Fxmin = '+str(res.Fxmin[0])] + res.Fxmin[1][1:9])
-        
-        res = res_dict[has_Fymax(filterlist)]
-        rows.append([str(res.number), 'Fymax = '+str(res.Fymax[0])] + res.Fymax[1][1:9]) 
-          
-        res = res_dict[has_Fzmax(filterlist)]     
-        rows.append([str(res.number), 'Fzmax = '+str(res.Fzmax[0])] + res.Fzmax[1][1:9]) 
+        if res.Fxmax[0] != 0:
+            rows.append([str(res.number), 'max Fx = '+str(res.Fxmax[0])] + res.Fxmax[1][1:9])
+        else:
+            rows.append(['-', 'max Fx = '+str(res.Fxmax[0])] + 8*['-'])
 
-        res = res_dict[has_Mxmax(filterlist)] 
-        rows.append([str(res.number), 'Mxmax = '+str(res.Mxmax[0])] + res.Mxmax[1][1:9])
-         
-        res = res_dict[has_Mymax(filterlist)] 
-        rows.append([str(res.number), 'Mymax = '+str(res.Mymax[0])] + res.Mymax[1][1:9])
+        res = res_dict[has_Fxmin(filterlist)]
+        if res.Fxmin[0] != 0:
+            rows.append([str(res.number), 'min Fx = '+str(res.Fxmin[0])] + res.Fxmin[1][1:9])
+        else:
+            rows.append(['-', 'min Fx = '+str(res.Fxmin[0])] + 8*['-'])
         
-        res = res_dict[has_Mzmax(filterlist)]        
-        rows.append([str(res.number), 'Mzmax = '+str(res.Mzmax[0])] + res.Mzmax[1][1:9])
+        res = res_dict[has_Fymaxabs(filterlist)]
+        if res.Fymaxabs[0] != 0:
+            rows.append([str(res.number), 'max |Fy| = '+str(res.Fymaxabs[0])] + res.Fymaxabs[1][1:9]) 
+        else:
+            rows.append(['-', 'max |Fy| = '+str(res.Fymaxabs[0])] + 8*['-'])
+          
+        res = res_dict[has_Fzmaxabs(filterlist)]
+        if res.Fzmaxabs[0] != 0:   
+            rows.append([str(res.number), 'max |Fz| = '+str(res.Fzmaxabs[0])] + res.Fzmaxabs[1][1:9])
+        else:
+            rows.append(['-', 'max |Fz| = '+str(res.Fzmaxabs[0])] + 8*['-'])
+
+        res = res_dict[has_Mxmaxabs(filterlist)]
+        if res.Mxmaxabs[0] != 0:
+            rows.append([str(res.number), 'max |Mx| = '+str(res.Mxmaxabs[0])] + res.Mxmaxabs[1][1:9])
+        else:
+            rows.append(['-', 'max |Mx| = '+str(res.Mxmaxabs[0])] + 8*['-'])
+         
+        res = res_dict[has_Mymaxabs(filterlist)] 
+        if res.Mymaxabs[0] != 0:
+            rows.append([str(res.number), 'max |My| = '+str(res.Mymaxabs[0])] + res.Mymaxabs[1][1:9])
+        else:
+            rows.append(['-', 'max |My| = '+str(res.Mymaxabs[0])] + 8*['-'])
+        
+        res = res_dict[has_Mymax(filterlist)]
+        if res.Mymax[0] != 0:
+            rows.append([str(res.number), 'max My = '+str(res.Mymax[0])] + res.Mymax[1][1:9])
+        else:
+            rows.append(['-', 'max My = '+str(res.Mymax[0])] + 8*['-'])
+        
+        res = res_dict[has_Mymin(filterlist)]
+        if res.Mymin[0] != 0:
+            rows.append([str(res.number), 'min My = '+str(res.Mymin[0])] + res.Mymin[1][1:9])    
+        else:
+            rows.append(['-', 'min My = '+str(res.Mymin[0])] + 8*['-'])
+        
+        res = res_dict[has_Mzmaxabs(filterlist)]  
+        if res.Mzmaxabs[0] != 0:
+            rows.append([str(res.number), 'max |Mz| = '+str(res.Mzmaxabs[0])] + res.Mzmaxabs[1][1:9])
+        else:
+            rows.append(['-', 'max |Mz| = '+str(res.Mzmaxabs[0])] + 8*['-'])
+
+        res = res_dict[has_Mzmax(filterlist)]
+        if res.Mzmax[0] != 0:
+            rows.append([str(res.number), 'max Mz = '+str(res.Mzmax[0])] + res.Mzmax[1][1:9])
+        else:
+            rows.append(['-', 'max Mz = '+str(res.Mzmax[0])] + 8*['-'])
+        
+        res = res_dict[has_Mzmin(filterlist)] 
+        if res.Mzmin[0] != 0:
+            rows.append([str(res.number), 'min Mz = '+str(res.Mzmin[0])] + res.Mzmin[1][1:9])
+        else:
+            rows.append(['-', 'min Mz = '+str(res.Mzmin[0])] + 8*['-'])
         
         res = res_dict[has_Mtotmax(filterlist)]
-        rows.append([str(res.number), 'Mtotmax = '+str(res.Mtotmax[0])] + res.Mtotmax[1][1:9])
-        
+        if res.Mtotmax[0] != 0:
+            rows.append([str(res.number), 'max |Mtot| = '+str(res.Mtotmax[0])] + res.Mtotmax[1][1:9])
+        else:
+            rows.append(['-', 'max |Mtot| = '+str(res.Mtotmax[0])] + 8*['-'])
+                    
         res = res_dict[has_Vtotmax(filterlist)]
-        rows.append([str(res.number), 'Vtotmax = '+str(res.Vtotmax[0])] + res.Vtotmax[1][1:9])
+        if res.Vtotmax[0] != 0:
+            rows.append([str(res.number), 'max |Vtot| = '+str(res.Vtotmax[0])] + res.Vtotmax[1][1:9])
+        else:
+            rows.append(['-', 'max |Vtot| = '+str(res.Vtotmax[0])] + 8*['-'])
         
         res = res_dict[has_Boltcompressionmax(filterlist)]
         if res.Boltcompressionmax[0] != 0:
-            rows.append([str(res.number), 'Max conn comp'] + res.Boltcompressionmax[1][1:9])
+            rows.append([str(res.number), 'max conn comp (N-M)'] + res.Boltcompressionmax[1][1:9])
+        else:
+            rows.append(['-', 'max conn comp (N-M)'] + 8*['-'])
         
         res = res_dict[has_Bolttensionmax(filterlist)]
         if res.Bolttensionmax[0] != 0:
-            rows.append([str(res.number), 'Max bolt tens'] + res.Bolttensionmax[1][1:9])
+            rows.append([str(res.number), 'max bolt tens (N-M)'] + res.Bolttensionmax[1][1:9])
+        else:
+            rows.append(['-', 'max bolt tens (N-M)'] + 8*['-'])
         
         res = res_dict[has_Boltshearmax(filterlist)]
         if res.Boltshearmax[0] != 0:
-            rows.append([str(res.number), 'Max bolt shear'] + res.Boltshearmax[1][1:9])
+            rows.append([str(res.number), 'max bolt shear (V-T)'] + res.Boltshearmax[1][1:9])
+        else:
+            rows.append(['-', 'max bolt shear (V-T)'] + 8*['-'])            
+            
+        res = res_dict[has_Fynormmax(filterlist)]
+        if res.Fynormmax[0] != 0:
+            rows.append([str(res.number), 'max Fynorm = '+str(res.Fynormmax[0])] + res.Fynormmax[1][1:9])
+        else:
+            rows.append(['-', 'max Fynorm = '+str(res.Fynormmax[0])] + 8*['-'])            
+            
+        res = res_dict[has_Fynormmin(filterlist)]
+        if res.Fynormmin[0] != 0:
+            rows.append([str(res.number), 'min Fynorm = '+str(res.Fynormmin[0])] + res.Fynormmin[1][1:9])
+        else:
+            rows.append(['-', 'min Fynorm = '+str(res.Fynormmin[0])] + 8*['-'])
+                    
+        res = res_dict[has_Fznormmax(filterlist)]
+        if res.Fznormmax[0] != 0:
+            rows.append([str(res.number), 'max Fznorm = '+str(res.Fznormmax[0])] + res.Fznormmax[1][1:9])
+        else:
+            rows.append(['-', 'max Fznorm = '+str(res.Fznormmax[0])] + 8*['-'])
+                    
+        res = res_dict[has_Fznormmin(filterlist)]
+        if res.Fznormmin[0] != 0:
+            rows.append([str(res.number), 'min Fznorm = '+str(res.Fznormmin[0])] + res.Fznormmin[1][1:9])
+        else:
+            rows.append(['-', 'min Fznorm = '+str(res.Fznormmin[0])] + 8*['-'])
         
         return tabulate(rows, headers="firstrow", tablefmt="grid")
     else:
@@ -620,6 +740,38 @@ def plot_Fz_Fy():
     plt.title("|Fy|-|Fz|", fontsize=15)
     plt.xlabel("|Fz| " + unit_force)
     plt.ylabel("|Fy| " + unit_force)
+    #-
+    plt.show()
+
+def plot_norm_Fz_Fy():
+    if is_memberlist_empty():
+        check_memberlist()
+        return None
+    if not data_for_memberlist_exist():
+        check_memberlist()
+        return None
+    #------
+    mlist = get_memberlist()
+    #-
+    X=[]
+    Y=[]
+    annotations=[]
+    for i in mlist:
+        X += res_dict[i].Fznormlist
+        Y += res_dict[i].Fynormlist
+        annotations += [res_dict[i].numberlist[j] + ' LC' + res_dict[i].LClist[j] for j in range(0, len(res_dict[i].numberlist))]
+    #-
+    plt.figure(figsize=(8,6))
+    plt.scatter(X,Y,s=50,color="blue")
+    #-
+    if myapp.ui.checkBox_pltAnnot.isChecked():
+        for i, label in enumerate(annotations):
+            plt.text(X[i], Y[i],'   '+label, fontsize=7)
+    plt.grid()
+    #-
+    plt.title("norm Fy-norm Fz", fontsize=15)
+    plt.xlabel("norm Fz " + unit_force)
+    plt.ylabel("norm Fy " + unit_force)
     #-
     plt.show()
 

@@ -38,7 +38,7 @@ You can also run it by using Python engine. After the Python and needed librarie
 License
 -------
 
-Copyright (C) 2022 Łukasz Laba <lukaszlaba@gmail.pl>
+Copyright (C) 2022 Łukasz Laba <lukaszlaba@gmail.com>
 
 Soco is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
