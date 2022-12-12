@@ -3,14 +3,13 @@ TODO:
 - short list of critical LC
 - idea statica output
 - cheking if clipboard data is corect
-- selecting which extremes should be reported
 - add data option
-- add Mymax Mymin   Mzmax Mzmin
 - round results to .00
 - add full detail dev report
 - plot axis proportion
 
 In progress
+- selecting which extremes should be reported
 - max and min 0 issue
 
 Done:

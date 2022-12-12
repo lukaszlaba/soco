@@ -385,7 +385,7 @@ def get_force_table(filterlist=['1i', '1j']):
                 rows.append([str(res.number), 'max Fynorm = '+str(res.Fynormmax[0])] + res.Fynormmax[1][1:9])
                 rows.append([str(res.number), 'min Fynorm = '+str(res.Fynormmin[0])] + res.Fynormmin[1][1:9])
                 rows.append([str(res.number), 'max Fznorm = '+str(res.Fznormmax[0])] + res.Fznormmax[1][1:9])
-                rows.append([str(res.number), 'min Fznorm = '+str(res.Fznormmin[0])] + res.Fznormmin[1][1:9]) 
+                rows.append([str(res.number), 'min Fznorm = '+str(res.Fznormmin[0])] + res.Fznormmin[1][1:9])
             else:
                 rows.append([i+'(!!)', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A'])
             rows.append(['Loc', 'Type', 'LC', 'Node', 'Fx', 'Fy', 'Fz', 'Mx', 'My', 'Mz'])
