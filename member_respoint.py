@@ -43,13 +43,13 @@ class member_respoint():
         for record in self.res:
             My = record[self.colMy]
             Mz = record[self.colMz]
-            record.append(round((My**2 + Mz**2)**0.5, 2))
+            record.append(round((My**2 + Mz**2)**0.5, 3))
 
     def calc_Vtot(self):
         for record in self.res:
             Fy = record[self.colFy]
             Fz = record[self.colFz]
-            record.append(round((Fy**2 + Fz**2)**0.5, 2))
+            record.append(round((Fy**2 + Fz**2)**0.5, 3))
 
     def calc_bolt_maxtension(self):
         for record in self.res:
@@ -66,7 +66,7 @@ class member_respoint():
             fm = -My / a / 2 - Mz / a / 2
             f = fp + fm
             f = min(f,0)
-            record.append(round(f, 2))
+            record.append(round(f, 3))
 
     def calc_bolt_maxcompression(self):
         for record in self.res:
@@ -83,7 +83,7 @@ class member_respoint():
             fm = My / a / 2 + Mz / a / 2
             f = fp + fm
             f = max(f,0)
-            record.append(round(f, 2))
+            record.append(round(f, 3))
 
     def calc_bolt_maxshear(self):
         for record in self.res:
@@ -105,7 +105,7 @@ class member_respoint():
             fy = fvy + fmy
             fz = fvz + fmz
             f =(fy**2 + fz**2)**0.5
-            record.append(round(f, 2))
+            record.append(round(f, 3))
 
     def calc_Fynorm(self):
         for record in self.res:
@@ -125,6 +125,9 @@ class member_respoint():
                 Fznom = -Fz
             record.append(Fznom)
     #---
+    @property
+    def Fxmaxabs(self):
+        return find_maxabs(self.res, self.colFx)
     @property
     def Fxmax(self):
         return find_max(self.res, self.colFx)

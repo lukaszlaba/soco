@@ -1,18 +1,21 @@
 TODO:
 - show selected members and nodes in staad
-- short list of critical LC
+- add 'set precision' option
 - idea statica output
 - cheking if clipboard data is corect
 - add data option
-- round results to .00
 - add full detail dev report
 - plot axis proportion
 
 In progress
-- selecting which extremes should be reported
-- max and min 0 issue
+
+
 
 Done:
+- excel format output (copy paste)
+- short list of critical LC
+- selecting which extremes should be reported
+- max and min 0 issue
 - add Mymax Mymin   Mzmax Mzmin
 - add Fznorm Fynorm and plot for that
 - fix 'get memers list' in UI

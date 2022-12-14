@@ -275,7 +275,10 @@ def load_memberlist_from_results():
     set_memberlist(mlist)
 
 #-----------------------------------------------------------
-    
+     
+def has_Fxmaxabs(where):
+    data = {i : res_dict[i].Fxmaxabs[0] for i in where}
+    return max(data, key=data.get)
 def has_Fxmax(where):
     data = {i : res_dict[i].Fxmax[0] for i in where}
     return max(data, key=data.get)
@@ -363,29 +366,132 @@ def get_force_table(filterlist=['1i', '1j']):
         for i in filterlist:
             if i in res_dict.keys():
                 res = res_dict[i]
-                rows.append([str(res.number), 'max Fx = '+str(res.Fxmax[0])] + res.Fxmax[1][1:9])
-                rows.append([str(res.number), 'min Fx = '+str(res.Fxmin[0])] + res.Fxmin[1][1:9])
-                rows.append([str(res.number), 'max |Fy| = '+str(res.Fymaxabs[0])] + res.Fymaxabs[1][1:9])      
-                rows.append([str(res.number), 'max |Fz| = '+str(res.Fzmaxabs[0])] + res.Fzmaxabs[1][1:9]) 
-                rows.append([str(res.number), 'max |Mx| = '+str(res.Mxmaxabs[0])] + res.Mxmaxabs[1][1:9]) 
-                rows.append([str(res.number), 'max |My| = '+str(res.Mymaxabs[0])] + res.Mymaxabs[1][1:9])
-                rows.append([str(res.number), 'max My = '+str(res.Mymax[0])] + res.Mymax[1][1:9])                
-                rows.append([str(res.number), 'min My = '+str(res.Mymin[0])] + res.Mymin[1][1:9])   
-                rows.append([str(res.number), 'max |Mz| = '+str(res.Mzmaxabs[0])] + res.Mzmaxabs[1][1:9])
-                rows.append([str(res.number), 'max Mz = '+str(res.Mzmax[0])] + res.Mzmax[1][1:9])                
-                rows.append([str(res.number), 'min Mz = '+str(res.Mzmin[0])] + res.Mzmin[1][1:9]) 
-                rows.append([str(res.number), 'max |Mtot| = '+str(res.Mtotmax[0])] + res.Mtotmax[1][1:9])
-                rows.append([str(res.number), 'max |Vtot| = '+str(res.Vtotmax[0])] + res.Vtotmax[1][1:9])
-                if res.Boltcompressionmax[0] != 0:
-                    rows.append([str(res.number), 'max conn comp (N-M)'] + res.Boltcompressionmax[1][1:9])
-                if res.Bolttensionmax[0] != 0:
-                    rows.append([str(res.number), 'max bolt tens (N-M)'] + res.Bolttensionmax[1][1:9])
-                if res.Boltshearmax[0] != 0:
-                    rows.append([str(res.number), 'max bolt shear (V-T)'] + res.Boltshearmax[1][1:9])
-                rows.append([str(res.number), 'max Fynorm = '+str(res.Fynormmax[0])] + res.Fynormmax[1][1:9])
-                rows.append([str(res.number), 'min Fynorm = '+str(res.Fynormmin[0])] + res.Fynormmin[1][1:9])
-                rows.append([str(res.number), 'max Fznorm = '+str(res.Fznormmax[0])] + res.Fznormmax[1][1:9])
-                rows.append([str(res.number), 'min Fznorm = '+str(res.Fznormmin[0])] + res.Fznormmin[1][1:9])
+
+                if myapp.ui.checkBox_maxabsFx.isChecked():
+                    if res.Fxmax[0] != 0:
+                        rows.append([str(res.number), 'max |Fx| = '+str(res.Fxmaxabs[0])] + res.Fxmaxabs[1][1:9])
+                    else:
+                        rows.append(['-', 'max Fx = '+str(res.Fxmax[0])] + 8*['-'])
+        
+                if myapp.ui.checkBox_maxFx.isChecked():
+                    if res.Fxmax[0] != 0:
+                        rows.append([str(res.number), 'max Fx = '+str(res.Fxmax[0])] + res.Fxmax[1][1:9])
+                    else:
+                        rows.append(['-', 'max Fx = '+str(res.Fxmax[0])] + 8*['-'])
+                
+                if myapp.ui.checkBox_minFx.isChecked():
+                    if res.Fxmin[0] != 0:
+                        rows.append([str(res.number), 'min Fx = '+str(res.Fxmin[0])] + res.Fxmin[1][1:9])
+                    else:
+                        rows.append(['-', 'min Fx = '+str(res.Fxmin[0])] + 8*['-'])
+                
+                if myapp.ui.checkBox_maxabsFy.isChecked():
+                    if res.Fymaxabs[0] != 0:
+                        rows.append([str(res.number), 'max |Fy| = '+str(res.Fymaxabs[0])] + res.Fymaxabs[1][1:9]) 
+                    else:
+                        rows.append(['-', 'max |Fy| = '+str(res.Fymaxabs[0])] + 8*['-'])
+        
+                if myapp.ui.checkBox_maxFynorm.isChecked():    
+                    if res.Fynormmax[0] != 0:
+                        rows.append([str(res.number), 'max Fynorm = '+str(res.Fynormmax[0])] + res.Fynormmax[1][1:9])
+                    else:
+                        rows.append(['-', 'max Fynorm = '+str(res.Fynormmax[0])] + 8*['-'])            
+                
+                if myapp.ui.checkBox_minFynorm.isChecked():    
+                    if res.Fynormmin[0] != 0:
+                        rows.append([str(res.number), 'min Fynorm = '+str(res.Fynormmin[0])] + res.Fynormmin[1][1:9])
+                    else:
+                        rows.append(['-', 'min Fynorm = '+str(res.Fynormmin[0])] + 8*['-'])                
+                        
+                if myapp.ui.checkBox_maxabsFz.isChecked():  
+                    if res.Fzmaxabs[0] != 0:   
+                        rows.append([str(res.number), 'max |Fz| = '+str(res.Fzmaxabs[0])] + res.Fzmaxabs[1][1:9])
+                    else:
+                        rows.append(['-', 'max |Fz| = '+str(res.Fzmaxabs[0])] + 8*['-'])
+        
+                if myapp.ui.checkBox_maxFznorm.isChecked():            
+                    if res.Fznormmax[0] != 0:
+                        rows.append([str(res.number), 'max Fznorm = '+str(res.Fznormmax[0])] + res.Fznormmax[1][1:9])
+                    else:
+                        rows.append(['-', 'max Fznorm = '+str(res.Fznormmax[0])] + 8*['-'])
+                
+                if myapp.ui.checkBox_minFznorm.isChecked():            
+                    if res.Fznormmin[0] != 0:
+                        rows.append([str(res.number), 'min Fznorm = '+str(res.Fznormmin[0])] + res.Fznormmin[1][1:9])
+                    else:
+                        rows.append(['-', 'min Fznorm = '+str(res.Fznormmin[0])] + 8*['-'])                
+        
+                if myapp.ui.checkBox_maxVtot.isChecked():
+                    if res.Vtotmax[0] != 0:
+                        rows.append([str(res.number), 'max |Vtot| = '+str(res.Vtotmax[0])] + res.Vtotmax[1][1:9])
+                    else:
+                        rows.append(['-', 'max |Vtot| = '+str(res.Vtotmax[0])] + 8*['-'])                
+                        
+                if myapp.ui.checkBox_maxabsMx.isChecked():
+                    if res.Mxmaxabs[0] != 0:
+                        rows.append([str(res.number), 'max |Mx| = '+str(res.Mxmaxabs[0])] + res.Mxmaxabs[1][1:9])
+                    else:
+                        rows.append(['-', 'max |Mx| = '+str(res.Mxmaxabs[0])] + 8*['-'])
+                    
+                if myapp.ui.checkBox_maxabsMy.isChecked(): 
+                    if res.Mymaxabs[0] != 0:
+                        rows.append([str(res.number), 'max |My| = '+str(res.Mymaxabs[0])] + res.Mymaxabs[1][1:9])
+                    else:
+                        rows.append(['-', 'max |My| = '+str(res.Mymaxabs[0])] + 8*['-'])
+                
+                if myapp.ui.checkBox_maxMy.isChecked():
+                    if res.Mymax[0] != 0:
+                        rows.append([str(res.number), 'max My = '+str(res.Mymax[0])] + res.Mymax[1][1:9])
+                    else:
+                        rows.append(['-', 'max My = '+str(res.Mymax[0])] + 8*['-'])
+                
+                if myapp.ui.checkBox_minMy.isChecked():
+                    if res.Mymin[0] != 0:
+                        rows.append([str(res.number), 'min My = '+str(res.Mymin[0])] + res.Mymin[1][1:9])    
+                    else:
+                        rows.append(['-', 'min My = '+str(res.Mymin[0])] + 8*['-'])
+                
+                if myapp.ui.checkBox_maxabsMz.isChecked(): 
+                    if res.Mzmaxabs[0] != 0:
+                        rows.append([str(res.number), 'max |Mz| = '+str(res.Mzmaxabs[0])] + res.Mzmaxabs[1][1:9])
+                    else:
+                        rows.append(['-', 'max |Mz| = '+str(res.Mzmaxabs[0])] + 8*['-'])
+                        
+                if myapp.ui.checkBox_maxMz.isChecked():
+                    if res.Mzmax[0] != 0:
+                        rows.append([str(res.number), 'max Mz = '+str(res.Mzmax[0])] + res.Mzmax[1][1:9])
+                    else:
+                        rows.append(['-', 'max Mz = '+str(res.Mzmax[0])] + 8*['-'])
+                
+                if myapp.ui.checkBox_minMz.isChecked():
+                    if res.Mzmin[0] != 0:
+                        rows.append([str(res.number), 'min Mz = '+str(res.Mzmin[0])] + res.Mzmin[1][1:9])
+                    else:
+                        rows.append(['-', 'min Mz = '+str(res.Mzmin[0])] + 8*['-'])
+        
+                if myapp.ui.checkBox_maxMtot.isChecked():
+                    if res.Mtotmax[0] != 0:
+                        rows.append([str(res.number), 'max |Mtot| = '+str(res.Mtotmax[0])] + res.Mtotmax[1][1:9])
+                    else:
+                        rows.append(['-', 'max |Mtot| = '+str(res.Mtotmax[0])] + 8*['-'])
+                        
+                if myapp.ui.checkBox_maxconncomp.isChecked():
+                    if res.Boltcompressionmax[0] != 0:
+                        rows.append([str(res.number), 'max conn comp (N-M)'] + res.Boltcompressionmax[1][1:9])
+                    else:
+                        rows.append(['-', 'max conn comp (N-M)'] + 8*['-'])
+                
+                if myapp.ui.checkBox_maxbolttens.isChecked():
+                    if res.Bolttensionmax[0] != 0:
+                        rows.append([str(res.number), 'max bolt tens (N-M)'] + res.Bolttensionmax[1][1:9])
+                    else:
+                        rows.append(['-', 'max bolt tens (N-M)'] + 8*['-'])
+                
+                if myapp.ui.checkBox_maxboltshear.isChecked():
+                    if res.Boltshearmax[0] != 0:
+                        rows.append([str(res.number), 'max bolt shear (V-T)'] + res.Boltshearmax[1][1:9])
+                    else:
+                        rows.append(['-', 'max bolt shear (V-T)'] + 8*['-'])             
             else:
                 rows.append([i+'(!!)', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A'])
             rows.append(['Loc', 'Type', 'LC', 'Node', 'Fx', 'Fy', 'Fz', 'Mx', 'My', 'Mz'])
@@ -399,127 +505,189 @@ def get_extreme_force_table(filterlist=['1i', '1j']):
     rows.append(['Loc', 'Type', 'LC', 'Node', 'Fx', 'Fy', 'Fz', 'Mx', 'My', 'Mz'])
     # 
     if filterlist:
-        res = res_dict[has_Fxmax(filterlist)]
-        if res.Fxmax[0] != 0:
-            rows.append([str(res.number), 'max Fx = '+str(res.Fxmax[0])] + res.Fxmax[1][1:9])
-        else:
-            rows.append(['-', 'max Fx = '+str(res.Fxmax[0])] + 8*['-'])
 
-        res = res_dict[has_Fxmin(filterlist)]
-        if res.Fxmin[0] != 0:
-            rows.append([str(res.number), 'min Fx = '+str(res.Fxmin[0])] + res.Fxmin[1][1:9])
-        else:
-            rows.append(['-', 'min Fx = '+str(res.Fxmin[0])] + 8*['-'])
+        if myapp.ui.checkBox_maxabsFx.isChecked():
+            res = res_dict[has_Fxmaxabs(filterlist)]
+            if res.Fxmax[0] != 0:
+                rows.append([str(res.number), 'max |Fx| = '+str(res.Fxmaxabs[0])] + res.Fxmaxabs[1][1:9])
+            else:
+                rows.append(['-', 'max Fx = '+str(res.Fxmax[0])] + 8*['-'])
+
+        if myapp.ui.checkBox_maxFx.isChecked():
+            res = res_dict[has_Fxmax(filterlist)]
+            if res.Fxmax[0] != 0:
+                rows.append([str(res.number), 'max Fx = '+str(res.Fxmax[0])] + res.Fxmax[1][1:9])
+            else:
+                rows.append(['-', 'max Fx = '+str(res.Fxmax[0])] + 8*['-'])
         
-        res = res_dict[has_Fymaxabs(filterlist)]
-        if res.Fymaxabs[0] != 0:
-            rows.append([str(res.number), 'max |Fy| = '+str(res.Fymaxabs[0])] + res.Fymaxabs[1][1:9]) 
-        else:
-            rows.append(['-', 'max |Fy| = '+str(res.Fymaxabs[0])] + 8*['-'])
-          
-        res = res_dict[has_Fzmaxabs(filterlist)]
-        if res.Fzmaxabs[0] != 0:   
-            rows.append([str(res.number), 'max |Fz| = '+str(res.Fzmaxabs[0])] + res.Fzmaxabs[1][1:9])
-        else:
-            rows.append(['-', 'max |Fz| = '+str(res.Fzmaxabs[0])] + 8*['-'])
+        if myapp.ui.checkBox_minFx.isChecked():
+            res = res_dict[has_Fxmin(filterlist)]
+            if res.Fxmin[0] != 0:
+                rows.append([str(res.number), 'min Fx = '+str(res.Fxmin[0])] + res.Fxmin[1][1:9])
+            else:
+                rows.append(['-', 'min Fx = '+str(res.Fxmin[0])] + 8*['-'])
+        
+        if myapp.ui.checkBox_maxabsFy.isChecked():
+            res = res_dict[has_Fymaxabs(filterlist)]
+            if res.Fymaxabs[0] != 0:
+                rows.append([str(res.number), 'max |Fy| = '+str(res.Fymaxabs[0])] + res.Fymaxabs[1][1:9]) 
+            else:
+                rows.append(['-', 'max |Fy| = '+str(res.Fymaxabs[0])] + 8*['-'])
 
-        res = res_dict[has_Mxmaxabs(filterlist)]
-        if res.Mxmaxabs[0] != 0:
-            rows.append([str(res.number), 'max |Mx| = '+str(res.Mxmaxabs[0])] + res.Mxmaxabs[1][1:9])
-        else:
-            rows.append(['-', 'max |Mx| = '+str(res.Mxmaxabs[0])] + 8*['-'])
+        if myapp.ui.checkBox_maxFynorm.isChecked():    
+            res = res_dict[has_Fynormmax(filterlist)]
+            if res.Fynormmax[0] != 0:
+                rows.append([str(res.number), 'max Fynorm = '+str(res.Fynormmax[0])] + res.Fynormmax[1][1:9])
+            else:
+                rows.append(['-', 'max Fynorm = '+str(res.Fynormmax[0])] + 8*['-'])            
+        
+        if myapp.ui.checkBox_minFynorm.isChecked():    
+            res = res_dict[has_Fynormmin(filterlist)]
+            if res.Fynormmin[0] != 0:
+                rows.append([str(res.number), 'min Fynorm = '+str(res.Fynormmin[0])] + res.Fynormmin[1][1:9])
+            else:
+                rows.append(['-', 'min Fynorm = '+str(res.Fynormmin[0])] + 8*['-'])                
+                
+        if myapp.ui.checkBox_maxabsFz.isChecked():  
+            res = res_dict[has_Fzmaxabs(filterlist)]
+            if res.Fzmaxabs[0] != 0:   
+                rows.append([str(res.number), 'max |Fz| = '+str(res.Fzmaxabs[0])] + res.Fzmaxabs[1][1:9])
+            else:
+                rows.append(['-', 'max |Fz| = '+str(res.Fzmaxabs[0])] + 8*['-'])
+
+        if myapp.ui.checkBox_maxFznorm.isChecked():            
+            res = res_dict[has_Fznormmax(filterlist)]
+            if res.Fznormmax[0] != 0:
+                rows.append([str(res.number), 'max Fznorm = '+str(res.Fznormmax[0])] + res.Fznormmax[1][1:9])
+            else:
+                rows.append(['-', 'max Fznorm = '+str(res.Fznormmax[0])] + 8*['-'])
+        
+        if myapp.ui.checkBox_minFznorm.isChecked():            
+            res = res_dict[has_Fznormmin(filterlist)]
+            if res.Fznormmin[0] != 0:
+                rows.append([str(res.number), 'min Fznorm = '+str(res.Fznormmin[0])] + res.Fznormmin[1][1:9])
+            else:
+                rows.append(['-', 'min Fznorm = '+str(res.Fznormmin[0])] + 8*['-'])                
+
+        if myapp.ui.checkBox_maxVtot.isChecked():
+            res = res_dict[has_Vtotmax(filterlist)]
+            if res.Vtotmax[0] != 0:
+                rows.append([str(res.number), 'max |Vtot| = '+str(res.Vtotmax[0])] + res.Vtotmax[1][1:9])
+            else:
+                rows.append(['-', 'max |Vtot| = '+str(res.Vtotmax[0])] + 8*['-'])                
+                
+        if myapp.ui.checkBox_maxabsMx.isChecked():
+            res = res_dict[has_Mxmaxabs(filterlist)]
+            if res.Mxmaxabs[0] != 0:
+                rows.append([str(res.number), 'max |Mx| = '+str(res.Mxmaxabs[0])] + res.Mxmaxabs[1][1:9])
+            else:
+                rows.append(['-', 'max |Mx| = '+str(res.Mxmaxabs[0])] + 8*['-'])
+            
+        if myapp.ui.checkBox_maxabsMy.isChecked(): 
+            res = res_dict[has_Mymaxabs(filterlist)] 
+            if res.Mymaxabs[0] != 0:
+                rows.append([str(res.number), 'max |My| = '+str(res.Mymaxabs[0])] + res.Mymaxabs[1][1:9])
+            else:
+                rows.append(['-', 'max |My| = '+str(res.Mymaxabs[0])] + 8*['-'])
+        
+        if myapp.ui.checkBox_maxMy.isChecked():
+            res = res_dict[has_Mymax(filterlist)]
+            if res.Mymax[0] != 0:
+                rows.append([str(res.number), 'max My = '+str(res.Mymax[0])] + res.Mymax[1][1:9])
+            else:
+                rows.append(['-', 'max My = '+str(res.Mymax[0])] + 8*['-'])
+        
+        if myapp.ui.checkBox_minMy.isChecked():
+            res = res_dict[has_Mymin(filterlist)]
+            if res.Mymin[0] != 0:
+                rows.append([str(res.number), 'min My = '+str(res.Mymin[0])] + res.Mymin[1][1:9])    
+            else:
+                rows.append(['-', 'min My = '+str(res.Mymin[0])] + 8*['-'])
+        
+        if myapp.ui.checkBox_maxabsMz.isChecked():
+            res = res_dict[has_Mzmaxabs(filterlist)]  
+            if res.Mzmaxabs[0] != 0:
+                rows.append([str(res.number), 'max |Mz| = '+str(res.Mzmaxabs[0])] + res.Mzmaxabs[1][1:9])
+            else:
+                rows.append(['-', 'max |Mz| = '+str(res.Mzmaxabs[0])] + 8*['-'])
+                
+        if myapp.ui.checkBox_maxMz.isChecked():
+            res = res_dict[has_Mzmax(filterlist)]
+            if res.Mzmax[0] != 0:
+                rows.append([str(res.number), 'max Mz = '+str(res.Mzmax[0])] + res.Mzmax[1][1:9])
+            else:
+                rows.append(['-', 'max Mz = '+str(res.Mzmax[0])] + 8*['-'])
+        
+        if myapp.ui.checkBox_minMz.isChecked():
+            res = res_dict[has_Mzmin(filterlist)] 
+            if res.Mzmin[0] != 0:
+                rows.append([str(res.number), 'min Mz = '+str(res.Mzmin[0])] + res.Mzmin[1][1:9])
+            else:
+                rows.append(['-', 'min Mz = '+str(res.Mzmin[0])] + 8*['-'])
+
+        if myapp.ui.checkBox_maxMtot.isChecked():
+            res = res_dict[has_Mtotmax(filterlist)]
+            if res.Mtotmax[0] != 0:
+                rows.append([str(res.number), 'max |Mtot| = '+str(res.Mtotmax[0])] + res.Mtotmax[1][1:9])
+            else:
+                rows.append(['-', 'max |Mtot| = '+str(res.Mtotmax[0])] + 8*['-'])
+                 
+        if myapp.ui.checkBox_maxconncomp.isChecked():
+            res = res_dict[has_Boltcompressionmax(filterlist)]
+            if res.Boltcompressionmax[0] != 0:
+                rows.append([str(res.number), 'max conn comp (N-M)'] + res.Boltcompressionmax[1][1:9])
+            else:
+                rows.append(['-', 'max conn comp (N-M)'] + 8*['-'])
+        
+        if myapp.ui.checkBox_maxbolttens.isChecked():
+            res = res_dict[has_Bolttensionmax(filterlist)]
+            if res.Bolttensionmax[0] != 0:
+                rows.append([str(res.number), 'max bolt tens (N-M)'] + res.Bolttensionmax[1][1:9])
+            else:
+                rows.append(['-', 'max bolt tens (N-M)'] + 8*['-'])
+        
+        if myapp.ui.checkBox_maxboltshear.isChecked():
+            res = res_dict[has_Boltshearmax(filterlist)]
+            if res.Boltshearmax[0] != 0:
+                rows.append([str(res.number), 'max bolt shear (V-T)'] + res.Boltshearmax[1][1:9])
+            else:
+                rows.append(['-', 'max bolt shear (V-T)'] + 8*['-'])   
+        report = tabulate(rows, headers="firstrow", tablefmt="grid")
+        
+        #--- adding compressed list
+        report += '\n'
+        report += '\n'
+        report += 'Compressed list of load cases:\n'
+        unique = {}
+        rows = rows[1:]
+        for i in rows:
+            i.pop(1)
+            if i[0] != '-':
+                unique[i[0]+i[1]] = i
+        unique = [unique[i] for i in unique.keys()]
+        unique = [['Loc', 'LC', 'Node', 'Fx', 'Fy', 'Fz', 'Mx', 'My', 'Mz']] + unique
+        report += tabulate(unique, headers="firstrow", tablefmt="grid")   
          
-        res = res_dict[has_Mymaxabs(filterlist)] 
-        if res.Mymaxabs[0] != 0:
-            rows.append([str(res.number), 'max |My| = '+str(res.Mymaxabs[0])] + res.Mymaxabs[1][1:9])
-        else:
-            rows.append(['-', 'max |My| = '+str(res.Mymaxabs[0])] + 8*['-'])
-        
-        res = res_dict[has_Mymax(filterlist)]
-        if res.Mymax[0] != 0:
-            rows.append([str(res.number), 'max My = '+str(res.Mymax[0])] + res.Mymax[1][1:9])
-        else:
-            rows.append(['-', 'max My = '+str(res.Mymax[0])] + 8*['-'])
-        
-        res = res_dict[has_Mymin(filterlist)]
-        if res.Mymin[0] != 0:
-            rows.append([str(res.number), 'min My = '+str(res.Mymin[0])] + res.Mymin[1][1:9])    
-        else:
-            rows.append(['-', 'min My = '+str(res.Mymin[0])] + 8*['-'])
-        
-        res = res_dict[has_Mzmaxabs(filterlist)]  
-        if res.Mzmaxabs[0] != 0:
-            rows.append([str(res.number), 'max |Mz| = '+str(res.Mzmaxabs[0])] + res.Mzmaxabs[1][1:9])
-        else:
-            rows.append(['-', 'max |Mz| = '+str(res.Mzmaxabs[0])] + 8*['-'])
-
-        res = res_dict[has_Mzmax(filterlist)]
-        if res.Mzmax[0] != 0:
-            rows.append([str(res.number), 'max Mz = '+str(res.Mzmax[0])] + res.Mzmax[1][1:9])
-        else:
-            rows.append(['-', 'max Mz = '+str(res.Mzmax[0])] + 8*['-'])
-        
-        res = res_dict[has_Mzmin(filterlist)] 
-        if res.Mzmin[0] != 0:
-            rows.append([str(res.number), 'min Mz = '+str(res.Mzmin[0])] + res.Mzmin[1][1:9])
-        else:
-            rows.append(['-', 'min Mz = '+str(res.Mzmin[0])] + 8*['-'])
-        
-        res = res_dict[has_Mtotmax(filterlist)]
-        if res.Mtotmax[0] != 0:
-            rows.append([str(res.number), 'max |Mtot| = '+str(res.Mtotmax[0])] + res.Mtotmax[1][1:9])
-        else:
-            rows.append(['-', 'max |Mtot| = '+str(res.Mtotmax[0])] + 8*['-'])
-                    
-        res = res_dict[has_Vtotmax(filterlist)]
-        if res.Vtotmax[0] != 0:
-            rows.append([str(res.number), 'max |Vtot| = '+str(res.Vtotmax[0])] + res.Vtotmax[1][1:9])
-        else:
-            rows.append(['-', 'max |Vtot| = '+str(res.Vtotmax[0])] + 8*['-'])
-        
-        res = res_dict[has_Boltcompressionmax(filterlist)]
-        if res.Boltcompressionmax[0] != 0:
-            rows.append([str(res.number), 'max conn comp (N-M)'] + res.Boltcompressionmax[1][1:9])
-        else:
-            rows.append(['-', 'max conn comp (N-M)'] + 8*['-'])
-        
-        res = res_dict[has_Bolttensionmax(filterlist)]
-        if res.Bolttensionmax[0] != 0:
-            rows.append([str(res.number), 'max bolt tens (N-M)'] + res.Bolttensionmax[1][1:9])
-        else:
-            rows.append(['-', 'max bolt tens (N-M)'] + 8*['-'])
-        
-        res = res_dict[has_Boltshearmax(filterlist)]
-        if res.Boltshearmax[0] != 0:
-            rows.append([str(res.number), 'max bolt shear (V-T)'] + res.Boltshearmax[1][1:9])
-        else:
-            rows.append(['-', 'max bolt shear (V-T)'] + 8*['-'])            
-            
-        res = res_dict[has_Fynormmax(filterlist)]
-        if res.Fynormmax[0] != 0:
-            rows.append([str(res.number), 'max Fynorm = '+str(res.Fynormmax[0])] + res.Fynormmax[1][1:9])
-        else:
-            rows.append(['-', 'max Fynorm = '+str(res.Fynormmax[0])] + 8*['-'])            
-            
-        res = res_dict[has_Fynormmin(filterlist)]
-        if res.Fynormmin[0] != 0:
-            rows.append([str(res.number), 'min Fynorm = '+str(res.Fynormmin[0])] + res.Fynormmin[1][1:9])
-        else:
-            rows.append(['-', 'min Fynorm = '+str(res.Fynormmin[0])] + 8*['-'])
-                    
-        res = res_dict[has_Fznormmax(filterlist)]
-        if res.Fznormmax[0] != 0:
-            rows.append([str(res.number), 'max Fznorm = '+str(res.Fznormmax[0])] + res.Fznormmax[1][1:9])
-        else:
-            rows.append(['-', 'max Fznorm = '+str(res.Fznormmax[0])] + 8*['-'])
-                    
-        res = res_dict[has_Fznormmin(filterlist)]
-        if res.Fznormmin[0] != 0:
-            rows.append([str(res.number), 'min Fznorm = '+str(res.Fznormmin[0])] + res.Fznormmin[1][1:9])
-        else:
-            rows.append(['-', 'min Fznorm = '+str(res.Fznormmin[0])] + 8*['-'])
-        
-        return tabulate(rows, headers="firstrow", tablefmt="grid")
+        #--- adding formated excel format
+        if myapp.ui.checkBox_excel.isChecked():
+            factor = float(myapp.ui.lineEdit_ideafactor.text())
+            report += '\n'
+            report += '\n'
+            report += '\nCompressed list of load cases in excel (with factor %s):\n'%factor
+            report += '(copy paste to excel)\n'
+            unique = unique[1:]
+            print(unique)
+            report += 'Loc\tLC\tFx\tFy\tFz\tMx\tMy\tMz\n'
+            for i in unique:
+                print(i)
+                report += '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(i[0],i[1],
+                                                        round(i[3]*factor, 3),
+                                                        round(i[4]*factor, 3),
+                                                        round(i[5]*factor, 3),
+                                                        round(i[6]*factor, 3),
+                                                        round(i[7]*factor, 3),
+                                                        round(i[8]*factor, 3))
+        return report
     else:
         return ''
 
