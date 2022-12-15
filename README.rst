@@ -16,10 +16,10 @@ Soco 0.0.3 (alpha stage for testing)
   - absFx, Mymax, Mymin, Mzmax, Mzmin added
   - Fznorm Fynorm and plot for that added
   - code refactoring
-  - plot Mx-Vtot changed in to |Mx|-Vtot
+  - plot Mx-Vtot changed in to absMx-Vtot
   - plot orientation update
-  - plot Mx-Vtot change in to |Mx|-Vtot
-  - plot Fx-Fy change in to |Fx|-|Fy|
+  - plot Mx-Vtot change in to absMx-Vtot
+  - plot Fx-Fy change in to absFx-absFy
 
 Soco 0.0.2 (alpha stage for testing)
   - unit autodetection
