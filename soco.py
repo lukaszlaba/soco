@@ -32,6 +32,7 @@ import matplotlib.pyplot as plt
 
 from mainwindow_ui import Ui_MainWindow
 from member_respoint import member_respoint
+from preset_content import preset_dict
 
 res_dict = {}
 unit_force = '[]'
@@ -67,6 +68,7 @@ class MAINWINDOW(QtWidgets.QMainWindow):
         self.ui.pushButton_clbMembers.clicked.connect(clbMembers)
         self.ui.pushButton_clbNodes.clicked.connect(clbNodes)
         #--
+        self.ui.comboBox_preset.currentIndexChanged.connect(set_preset_content)
         #--
         self.ui.pushButton_info.clicked.connect(info)
         self.ui.pushButton_print.clicked.connect(print_report)
@@ -1006,6 +1008,14 @@ def plot_Mx_Vtot():
     plt.show()
 
 #-----------------------------------------------------------
+def set_preset_content():
+
+    selected = myapp.ui.comboBox_preset.currentText()
+    states = preset_dict[selected]
+    myapp.ui.checkBox_maxabsFx.setChecked(states[0])
+    myapp.ui.checkBox_maxFx.setChecked(states[1])
+    myapp.ui.checkBox_minFx.setChecked(states[2])
+    #.....
 
 def print_report():
     if print_dialog.exec_() == QtWidgets.QDialog.Accepted:
@@ -1040,6 +1050,8 @@ if __name__ == '__main__':
     myapp.ui.textBrowser_output.setText('Welcome in soco - Staad member force extract tool! Load data and fill input list to get report.')
     myapp.ui.plainTextEdit_serch.clear()
     myapp.setWindowIcon(QtGui.QIcon('app.ico'))
+    myapp.ui.comboBox_preset.addItems(preset_dict.keys())
+    myapp.ui.comboBox_preset.setCurrentIndex(1)
     myapp.show()
     sys.exit(app.exec_())
 

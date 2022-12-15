@@ -8,6 +8,7 @@ TODO:
 - preset content list
 
 In progress
+- preset content list
 
 Done:
 - plot axis proportion fixed
