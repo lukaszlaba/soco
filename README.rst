@@ -9,17 +9,17 @@ Changelog
 ---------
 
 Soco 0.0.3 (alpha stage for testing)
-- IdeaStatica output (need tests)
-- excel format output
-- short list of critical LC
-- selecting content of report
-- absFx, Mymax, Mymin, Mzmax, Mzmin added
-- Fznorm Fynorm and plot for that added
-- code refactoring
-- plot Mx-Vtot changed in to |Mx|-Vtot
-- plot orientation update
-- plot Mx-Vtot change in to |Mx|-Vtot
-- plot Fx-Fy change in to |Fx|-|Fy|
+  - IdeaStatica output (need tests)
+  - excel format output
+  - short list of critical LC
+  - selecting content of report
+  - absFx, Mymax, Mymin, Mzmax, Mzmin added
+  - Fznorm Fynorm and plot for that added
+  - code refactoring
+  - plot Mx-Vtot changed in to |Mx|-Vtot
+  - plot orientation update
+  - plot Mx-Vtot change in to |Mx|-Vtot
+  - plot Fx-Fy change in to |Fx|-|Fy|
 
 Soco 0.0.2 (alpha stage for testing)
   - unit autodetection
