@@ -232,6 +232,9 @@ p, li { white-space: pre-wrap; }
     </property>
    </widget>
    <widget class="QLabel" name="label_6">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>1250</x>
@@ -618,9 +621,9 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="checkBox_excel_2">
+      <widget class="QCheckBox" name="checkBox_idea">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="text">
         <string>Idea with factor</string>
@@ -717,7 +720,7 @@ p, li { white-space: pre-wrap; }
         <string>plot annotation</string>
        </property>
        <property name="checked">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>

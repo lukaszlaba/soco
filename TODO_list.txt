@@ -1,18 +1,18 @@
 TODO:
 - show selected members and nodes in staad
 - add 'set precision' option
-- idea statica output
 - cheking if clipboard data is corect
 - add data option
 - add full detail dev report
-- plot axis proportion
+- check idea statica output
+- preset content list
 
 In progress
 
-
-
 Done:
-- excel format output (copy paste)
+- plot axis proportion fixed
+- IdeaStatica output
+- excel format output
 - short list of critical LC
 - selecting which extremes should be reported
 - max and min 0 issue

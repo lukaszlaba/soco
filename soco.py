@@ -37,7 +37,7 @@ res_dict = {}
 unit_force = '[]'
 unit_moment = '[]'
 
-version = 'soco 0.0.2'
+version = 'soco 0.0.3'
 
 class MAINWINDOW(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -72,12 +72,12 @@ class MAINWINDOW(QtWidgets.QMainWindow):
         self.ui.pushButton_print.clicked.connect(print_report)
 
 def clbResults():
-    # from tkinter import Tk
-    # root = Tk()
-    # root.withdraw()
-    #data = root.clipboard_get()
-    import testdata
-    data = testdata.data
+    from tkinter import Tk
+    root = Tk()
+    root.withdraw()
+    data = root.clipboard_get()
+    # import testdata
+    # data = testdata.data
     data = data.replace("\r", '')
     data =  data.split('\n')
     for i in range(len(data)):#--each parameter
@@ -143,7 +143,6 @@ def clbResults():
         res_dict[key].calc_additional_forces()
     #---
     myapp.ui.textBrowser_output.setText('>>>> %s res point data loaded from %s <<<<'%(len(res_dict.keys()), ' model name '))
-    set_title(info = ' model name ')
 
 def clbMembers():
     from tkinter import Tk
@@ -668,13 +667,12 @@ def get_extreme_force_table(filterlist=['1i', '1j']):
         unique = [['Loc', 'LC', 'Node', 'Fx', 'Fy', 'Fz', 'Mx', 'My', 'Mz']] + unique
         report += tabulate(unique, headers="firstrow", tablefmt="grid")   
          
-        #--- adding formated excel format
+        #--- adding factord excel format
         if myapp.ui.checkBox_excel.isChecked():
             factor = float(myapp.ui.lineEdit_ideafactor.text())
             report += '\n'
-            report += '\n'
             report += '\nCompressed list of load cases in excel (with factor %s):\n'%factor
-            report += '(copy paste to excel)\n'
+            report += '(copy paste to notepad then to excel)\n'
             unique = unique[1:]
             print(unique)
             report += 'Loc\tLC\tFx\tFy\tFz\tMx\tMy\tMz\n'
@@ -687,29 +685,34 @@ def get_extreme_force_table(filterlist=['1i', '1j']):
                                                         round(i[6]*factor, 3),
                                                         round(i[7]*factor, 3),
                                                         round(i[8]*factor, 3))
+        #--- adding factored IdeaStatica format
+        if myapp.ui.checkBox_idea.isChecked():
+            factor = float(myapp.ui.lineEdit_ideafactor.text())
+            report += '\n'
+            report += '\nCompressed list of load cases in IdeStatica format (with factor %s):\n'%factor
+            report += '(copy paste to IdeaStatica)\n'
+            report += '(!!IN PROGRESS!!)\n'
+            print(unique)
+            report += 'N\tVy\tVz\tMx\tMy\tMz\n'
+            for i in unique:
+                print(i)
+                if 'i' in i[0]:
+                    report += '%s\t%s\t%s\t%s\t%s\t%s\n'%(  round(-i[3]*factor, 2),
+                                                            round(-i[5]*factor, 2),
+                                                            round(-i[4]*factor, 2),
+                                                            round(i[6]*factor, 2),
+                                                            round(i[8]*factor, 2),
+                                                            round(i[7]*factor, 2))
+                if 'j' in i[0]:
+                    report += '%s\t%s\t%s\t%s\t%s\t%s\n'%(  round(-i[3]*factor, 2),
+                                                            round(i[5]*factor, 2),
+                                                            round(i[4]*factor, 2),
+                                                            round(i[6]*factor, 2),
+                                                            round(i[8]*factor, 2),
+                                                            round(i[7]*factor, 2))
         return report
     else:
         return ''
-
-# def get_force_table_statica_format(filterlist=None, factor=1.0):
-#     report = ''
-#     report += 'N\tVy\tVz\tMx\tMy\tMz\n'
-# 
-#     if filterlist:
-#         for i in filterlist:
-#             if i in res_dict.keys():
-#                 res = res_dict[i]
-#                 if res.Pmax_r != res.Pmin_r:
-#                     report += str(round(res.Pmax_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(-res.V2_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
-#                     report += str(round(res.Pmin_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(-res.V2_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'
-#                 else:
-#                     report += str(round(res.Pmax_r*factor, 1))+'\t'+str(round(res.V3_r*factor, 1))+'\t'+str(round(-res.V2_r*factor, 1))+'\t'+str(round(res.T_r*factor, 1))+'\t'+str(round(res.M3_r*factor, 1))+'\t'+str(round(res.M2_r*factor, 1))+'\n'                    
-#             else:
-#                 report += 'NoData/n'
-#         return report
-#     else:
-#         return ''
-
 
 def show_report():
     if is_memberlist_empty():
@@ -737,13 +740,6 @@ def show_report():
 
     report += 'Extreme cases list:\n'
     report += get_extreme_force_table(mlist) + '\n'
-    report += '.........\n'
-    #--
-    # if myapp.ui.checkBox_idea.isChecked():
-    #     factor = float(myapp.ui.lineEdit_ideafactor.text())
-    #     report += '\nIdea Statica format extreme cases table (with factor %s):\n'%factor
-    #     report += '.........\n'
-    #--
     myapp.ui.textBrowser_output.setText(report)
 
 #-----------------------------------------------------------
@@ -777,6 +773,10 @@ def plot_Fx_My():
     plt.title("Fx-My", fontsize=15)
     plt.xlabel("Fx " + unit_force)
     plt.ylabel("My " + unit_moment)
+    limx = 1.1*max(abs(max(X)),abs(min(X)))
+    limy = 1.1*max(abs(max(Y)),abs(min(Y)))
+    plt.xlim([-limx, limx])
+    plt.ylim([-limy, limy])
     #-
     plt.show()
 
@@ -809,6 +809,10 @@ def plot_Fx_Mz():
     plt.title("Fx-Mz", fontsize=15)
     plt.xlabel("Fx " + unit_force)
     plt.ylabel("Mz " + unit_moment)
+    limx = 1.1*max(abs(max(X)),abs(min(X)))
+    limy = 1.1*max(abs(max(Y)),abs(min(Y)))
+    plt.xlim([-limx, limx])
+    plt.ylim([-limy, limy])
     #-
     plt.show()
 
@@ -841,6 +845,10 @@ def plot_Fx_Mtot():
     plt.title("Fx-Mtot", fontsize=15)
     plt.xlabel("Fx " + unit_force)
     plt.ylabel("Mtot " + unit_moment)
+    limx = 1.1*max(abs(max(X)),abs(min(X)))
+    limy = 1.1*max(abs(max(Y)),abs(min(Y)))
+    plt.xlim([-limx, limx])
+    plt.ylim([0, limy])
     #-
     plt.show()
 
@@ -873,6 +881,11 @@ def plot_Mz_My():
     plt.title("Mz-My", fontsize=15)
     plt.xlabel("Mz " + unit_moment)
     plt.ylabel("My " + unit_moment)
+    lim = 1.1*max(abs(max(X)),abs(min(X)),abs(max(Y)),abs(min(Y)))
+    plt.xlim([-lim, lim])
+    plt.ylim([-lim, lim])
+    ax = plt.gca()
+    ax.set_aspect('equal')
     #-
     plt.show()
 
@@ -908,6 +921,12 @@ def plot_Fz_Fy():
     plt.title("|Fy|-|Fz|", fontsize=15)
     plt.xlabel("|Fz| " + unit_force)
     plt.ylabel("|Fy| " + unit_force)
+    
+    lim = 1.1*max(abs(max(X)),abs(min(X)),abs(max(Y)),abs(min(Y)))
+    plt.xlim([0, lim])
+    plt.ylim([0, lim])
+    ax = plt.gca()
+    ax.set_aspect('equal')
     #-
     plt.show()
 
@@ -940,6 +959,11 @@ def plot_norm_Fz_Fy():
     plt.title("norm Fy-norm Fz", fontsize=15)
     plt.xlabel("norm Fz " + unit_force)
     plt.ylabel("norm Fy " + unit_force)
+    lim = 1.1*max(abs(max(X)),abs(min(X)),abs(max(Y)),abs(min(Y)))
+    plt.xlim([-lim, lim])
+    plt.ylim([-lim, lim])
+    ax = plt.gca()
+    ax.set_aspect('equal')
     #-
     plt.show()
 
@@ -971,9 +995,13 @@ def plot_Mx_Vtot():
             plt.text(X[i], Y[i],'   '+label, fontsize=7)
     plt.grid()
     #-
-    plt.title("Mx-Vtot", fontsize=15)
-    plt.xlabel("Mx " + unit_moment)
+    plt.title("|Mx|-Vtot", fontsize=15)
+    plt.xlabel("|Mx| " + unit_moment)
     plt.ylabel("Vtot " + unit_force)
+    limx = 1.1*max(abs(max(X)),abs(min(X)))
+    limy = 1.1*max(abs(max(Y)),abs(min(Y)))
+    plt.xlim([0, limx])
+    plt.ylim([0, limy])
     #-
     plt.show()
 
@@ -999,6 +1027,8 @@ Soco is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 You should have received a copy of the GNU General Public License along with Soco; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.
 
 Copyright (C) 2022 Lukasz Laba (e-mail : lukaszlaba@gmail.com)
+Project website: https://github.com/lukaszlaba/soco
+Check for lataest version: https://github.com/lukaszlaba/soco/releases
 '''
     myapp.ui.textBrowser_output.setText(about)
 
@@ -1016,5 +1046,5 @@ if __name__ == '__main__':
 
 '''
 command used to frozening with pyinstaller
-pyinstaller --onefile --noconsole --icon=app.ico ..\gismo.py
+pyinstaller --onefile --noconsole --icon=app.ico ..\soco.py
 '''
