@@ -27,6 +27,7 @@ import sys
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 from PyQt5.QtPrintSupport import QPrintDialog
+from PyQt5.QtWidgets import QMessageBox
 from tabulate import tabulate
 import matplotlib.pyplot as plt
 
@@ -62,6 +63,7 @@ class MAINWINDOW(QtWidgets.QMainWindow):
         self.ui.pushButton_makei.clicked.connect(makei)
         self.ui.pushButton_makej.clicked.connect(makej)
         self.ui.pushButton_makeij.clicked.connect(makeij)
+        self.ui.pushButton_staad_show.clicked.connect(show_in_staad)
         self.ui.pushButton_check.clicked.connect(check_memberlist)
         #--
         self.ui.pushButton_clbResults.clicked.connect(clbResults)
@@ -85,6 +87,14 @@ def clbResults():
     for i in range(len(data)):#--each parameter
         tmp = data[i].split('\t')
         data[i] = tmp
+    # - cheking if clipboard data is corect
+    try:
+        if not 'Fx' in data[0][3]:
+            QMessageBox.about(myapp, "Warning", 'It looks, the cipboard have no Staad result data.')
+            return None
+    except:
+        QMessageBox.about(myapp, "Warning", 'It looks, the cipboard have no Staad result data.')
+        return None        
     #--
     for i in range(1, len(data)-1):
         #print(i)
@@ -156,8 +166,18 @@ def clbMembers():
     for i in range(len(data)):#--each parameter
         tmp = data[i].split('\t')
         data[i] = tmp
+    # - cheking if clipboard data is corect
+    try:
+        if not len(data[0])==7 :
+            QMessageBox.about(myapp, "Warning", 'It looks, the cipboard have no Staad member data.')
+            return None
+    except:
+        QMessageBox.about(myapp, "Warning", 'It looks, the cipboard have no Staad member data.')
+        return None
+    #--
+    if data[-1] ==['']: data.pop()
+    #--
     mlist = [str(int(i[0])) for i in data]
-    print(mlist)
     set_memberlist(mlist)
     
 def clbNodes():
@@ -170,6 +190,18 @@ def clbNodes():
     for i in range(len(data)):#--each parameter
         tmp = data[i].split('\t')
         data[i] = tmp
+    # - cheking if clipboard data is corect
+    try:
+        if not len(data[0])==4 :
+            QMessageBox.about(myapp, "Warning", 'It looks, the cipboard have no Staad node data.')
+            return None
+    except:
+        QMessageBox.about(myapp, "Warning", 'It looks, the cipboard have no Staad node data.')
+        return None
+    #--
+    if data[-1] ==['']: data.pop()
+    print(data)
+    #--
     nlist = [str(int(i[0])) for i in data]
     print(nlist)
     mlist = get_memberlist()
@@ -267,6 +299,24 @@ def data_for_memberlist_exist():
         return False
     else:
         return True
+
+def show_in_staad():
+    member_numbers = get_memberlist()
+    member_numbers = [int(''.join(filter(str.isdigit, i))) for i in member_numbers]
+    #-
+    node_numbers = []
+    for i in get_memberlist():
+        try:
+            node_numbers.append(int(res_dict[i].node))
+        except:
+            pass
+    #-showing in staad
+    for i in member_numbers:
+        #...
+        pass
+    for i in node_numbers:
+        #...
+        pass
 
 def load_memberlist_from_results():
     mlist = list(res_dict.keys())
@@ -1015,8 +1065,36 @@ def set_preset_content():
     myapp.ui.checkBox_maxabsFx.setChecked(states[0])
     myapp.ui.checkBox_maxFx.setChecked(states[1])
     myapp.ui.checkBox_minFx.setChecked(states[2])
+    
+    myapp.ui.checkBox_maxabsFy.setChecked(states[3])
+    myapp.ui.checkBox_maxFynorm.setChecked(states[4])
+    myapp.ui.checkBox_minFynorm.setChecked(states[5])
+    
+    myapp.ui.checkBox_maxabsFz.setChecked(states[6])
+    myapp.ui.checkBox_maxFznorm.setChecked(states[7])
+    myapp.ui.checkBox_minFznorm.setChecked(states[8])
+    
+    myapp.ui.checkBox_maxVtot.setChecked(states[9])
+    
+    myapp.ui.checkBox_maxabsMx.setChecked(states[10])
+    
+    myapp.ui.checkBox_maxabsMy.setChecked(states[11])
+    myapp.ui.checkBox_maxMy.setChecked(states[12])
+    myapp.ui.checkBox_minMy.setChecked(states[13])
+    
+    myapp.ui.checkBox_maxabsMz.setChecked(states[14])
+    myapp.ui.checkBox_maxMz.setChecked(states[15])
+    myapp.ui.checkBox_minMz.setChecked(states[16])
+    
+    myapp.ui.checkBox_maxMtot.setChecked(states[17])
+    
+    myapp.ui.checkBox_maxconncomp.setChecked(states[18])
+    myapp.ui.checkBox_maxbolttens.setChecked(states[19])
+    myapp.ui.checkBox_maxboltshear.setChecked(states[20])
     #.....
-
+#                                                           norm        norm
+#                                        abs max min   abs max  min abs max min  V  max   abs  max min abs max min  M   max  max  max
+#                                        Fx   Fx  Fx   Fy  Fy   Fy  Fz  Fz  Fz  tot  Mx    My  My   My  Mz  Mz Mz  tot  com  ten  shear
 def print_report():
     if print_dialog.exec_() == QtWidgets.QDialog.Accepted:
         myapp.ui.textBrowser_output.document().print_(print_dialog.printer())
@@ -1051,7 +1129,7 @@ if __name__ == '__main__':
     myapp.ui.plainTextEdit_serch.clear()
     myapp.setWindowIcon(QtGui.QIcon('app.ico'))
     myapp.ui.comboBox_preset.addItems(preset_dict.keys())
-    myapp.ui.comboBox_preset.setCurrentIndex(1)
+    myapp.ui.comboBox_preset.setCurrentIndex(3)
     myapp.show()
     sys.exit(app.exec_())
 
