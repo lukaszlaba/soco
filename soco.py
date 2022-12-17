@@ -139,7 +139,7 @@ def clbResults():
         if end == 1:
             record[3] = -record[3] # Fx sign update at the member end
             record[4] = -record[4] # Fy sign update at the member end
-            record[5] = -record[6] # Fz sign update at the member end
+            record[5] = -record[5] # Fz sign update at the member end
             record[6] = -record[6] # Mx sign update at the member end
             record[7] = -record[7] # My sign update at the member end
             record[8] = -record[8] # Mz sign update at the member end

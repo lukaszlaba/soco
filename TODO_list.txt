@@ -8,9 +8,6 @@ In progress
 - show selected members and nodes in staad
 
 
-
-
-
 Done:
 - cheking if clipboard data is corect
 - preset content list
