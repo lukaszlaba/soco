@@ -8,6 +8,13 @@ Soco - Staad member result extract tool
 Changelog
 ---------
 
+Soco 0.0.4 (beta stage for testing)
+  - IdeaStatica output update
+  - show selected members and nodes in staad
+  - cheking if clipboard data is corect
+  - preset report content
+  - plot axis proportion fixed
+
 Soco 0.0.3 (alpha stage for testing)
   - IdeaStatica output (need tests)
   - excel format output
@@ -46,7 +53,7 @@ Link to windows binaries download is shown below.
 
 https://github.com/lukaszlaba/soco/releases
 
-You can also run it by using Python engine. After the Python and needed libraries was installed, just run soco.py file. Soco is  based on Python 3 and non-standard Python libraries PyQt5, matplotlib and tabulate.
+You can also run it by using Python engine. After the Python and needed libraries was installed, just run soco.py file. Soco is  based on Python 3 and non-standard Python libraries PyQt5, matplotlib, tabulate and pywin32.
 
 License
 -------

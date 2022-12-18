@@ -6,9 +6,10 @@ TODO:
 
 In progress
 
-- check idea statica output
+
 
 Done:
+- check idea statica output
 - show selected members and nodes in staad
 - cheking if clipboard data is corect
 - preset content list

@@ -40,7 +40,7 @@ res_dict = {}
 unit_force = '[]'
 unit_moment = '[]'
 
-version = 'soco 0.0.3'
+version = 'soco 0.0.4'
 
 class MAINWINDOW(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -98,7 +98,6 @@ def clbResults():
         return None        
     #--
     for i in range(1, len(data)-1):
-        #print(i)
         if data[i][1] == '':
             data[i][1]=data[i-1][1]
     #--
@@ -121,19 +120,14 @@ def clbResults():
     memb = None
     end = -1
     for i in range(1, len(data)-1):
-        #print('------')
         record = data[i]
-        #print(record)
         if record[0] != '':
-            #print ('new-------')
             memb_i = member_respoint()
             memb_j = member_respoint()
             curent_mem_number = record[0]
             memb_i.number = curent_mem_number + 'i'
             memb_j.number = curent_mem_number + 'j'
-        #print('zapis')
         if end == -1:
-            #memb.i = record[2]
             memb_i.res.append(record)
             memb_i.node = record[2]
         #transform to internal force values instead of end forces
@@ -201,10 +195,8 @@ def clbNodes():
         return None
     #--
     if data[-1] ==['']: data.pop()
-    print(data)
     #--
     nlist = [str(int(i[0])) for i in data]
-    print(nlist)
     mlist = get_memberlist()
     mlist = [i.replace('i','') for i in mlist]
     mlist = [i.replace('j','') for i in mlist]
@@ -733,10 +725,8 @@ def get_extreme_force_table(filterlist=['1i', '1j']):
             report += '\nCompressed list of load cases in excel (with factor %s):\n'%factor
             report += '(copy paste to notepad then to excel)\n'
             unique = unique[1:]
-            print(unique)
             report += 'Loc\tLC\tFx\tFy\tFz\tMx\tMy\tMz\n'
             for i in unique:
-                print(i)
                 report += '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(i[0],i[1],
                                                         round(i[3]*factor, 3),
                                                         round(i[4]*factor, 3),
@@ -750,23 +740,20 @@ def get_extreme_force_table(filterlist=['1i', '1j']):
             report += '\n'
             report += '\nCompressed list of load cases in IdeStatica format (with factor %s):\n'%factor
             report += '(copy paste to IdeaStatica)\n'
-            report += '(!!IN PROGRESS!!)\n'
-            print(unique)
             report += 'N\tVy\tVz\tMx\tMy\tMz\n'
             for i in unique:
-                print(i)
                 if 'i' in i[0]:
                     report += '%s\t%s\t%s\t%s\t%s\t%s\n'%(  round(-i[3]*factor, 2),
-                                                            round(-i[5]*factor, 2),
+                                                            round(i[5]*factor, 2),
                                                             round(-i[4]*factor, 2),
-                                                            round(i[6]*factor, 2),
+                                                            round(-i[6]*factor, 2),
                                                             round(i[8]*factor, 2),
-                                                            round(i[7]*factor, 2))
+                                                            round(-i[7]*factor, 2))
                 if 'j' in i[0]:
                     report += '%s\t%s\t%s\t%s\t%s\t%s\n'%(  round(-i[3]*factor, 2),
                                                             round(i[5]*factor, 2),
                                                             round(i[4]*factor, 2),
-                                                            round(i[6]*factor, 2),
+                                                            round(-i[6]*factor, 2),
                                                             round(i[8]*factor, 2),
                                                             round(i[7]*factor, 2))
         return report
@@ -1066,7 +1053,6 @@ def plot_Mx_Vtot():
 
 #-----------------------------------------------------------
 def set_preset_content():
-
     selected = myapp.ui.comboBox_preset.currentText()
     states = preset_dict[selected]
     myapp.ui.checkBox_maxabsFx.setChecked(states[0])
@@ -1098,10 +1084,7 @@ def set_preset_content():
     myapp.ui.checkBox_maxconncomp.setChecked(states[18])
     myapp.ui.checkBox_maxbolttens.setChecked(states[19])
     myapp.ui.checkBox_maxboltshear.setChecked(states[20])
-    #.....
-#                                                           norm        norm
-#                                        abs max min   abs max  min abs max min  V  max   abs  max min abs max min  M   max  max  max
-#                                        Fx   Fx  Fx   Fy  Fy   Fy  Fz  Fz  Fz  tot  Mx    My  My   My  Mz  Mz Mz  tot  com  ten  shear
+
 def print_report():
     if print_dialog.exec_() == QtWidgets.QDialog.Accepted:
         myapp.ui.textBrowser_output.document().print_(print_dialog.printer())
