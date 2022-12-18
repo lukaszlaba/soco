@@ -2,13 +2,14 @@ TODO:
 - add 'set precision' option
 - add data option
 - add full detail dev report
-- check idea statica output
+
 
 In progress
-- show selected members and nodes in staad
 
+- check idea statica output
 
 Done:
+- show selected members and nodes in staad
 - cheking if clipboard data is corect
 - preset content list
 - plot axis proportion fixed

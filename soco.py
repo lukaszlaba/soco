@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
 import sys
+import win32com.client
 
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
@@ -301,6 +302,14 @@ def data_for_memberlist_exist():
         return True
 
 def show_in_staad():
+    check_memberlist()
+    try:
+        os = win32com.client.GetActiveObject("StaadPro.OpenSTAAD")
+        geometry = os.Geometry
+    except:
+        QMessageBox.about(myapp, "Warning", 'Staad not detected.')
+        return None
+    #---
     member_numbers = get_memberlist()
     member_numbers = [int(''.join(filter(str.isdigit, i))) for i in member_numbers]
     #-
@@ -312,11 +321,9 @@ def show_in_staad():
             pass
     #-showing in staad
     for i in member_numbers:
-        #...
-        pass
+        geometry.SelectBeam(i)
     for i in node_numbers:
-        #...
-        pass
+        geometry.SelectNode(i)
 
 def load_memberlist_from_results():
     mlist = list(res_dict.keys())
