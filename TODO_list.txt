@@ -3,9 +3,7 @@ TODO:
 - add data option
 - add full detail dev report
 
-
-In progress
-
+In progress:
 
 
 Done:

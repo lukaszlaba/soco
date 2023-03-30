@@ -8,14 +8,17 @@ Soco - Staad member result extract tool
 Changelog
 ---------
 
-Soco 0.0.4 (beta stage for testing)
+Soco 0.1.0 (beta stage)
+  - ui update
+
+Soco 0.0.4 (beta stage)
   - IdeaStatica output update
   - show selected members and nodes in staad
   - cheking if clipboard data is corect
   - preset report content
   - plot axis proportion fixed
 
-Soco 0.0.3 (alpha stage for testing)
+Soco 0.0.3 (alpha stage)
   - IdeaStatica output (need tests)
   - excel format output
   - short list of critical LC
@@ -41,10 +44,6 @@ Description
 
 Soco is a tool that help analyse Staad member results. Soco output report and plots make easy to find extreme member forces needed for connection design.
 
-Requirements
-------------
-
-
 How to run it
 -------------
 
@@ -53,12 +52,12 @@ Link to windows binaries download is shown below.
 
 https://github.com/lukaszlaba/soco/releases
 
-You can also run it by using Python engine. After the Python and needed libraries was installed, just run soco.py file. Soco is  based on Python 3 and non-standard Python libraries PyQt5, matplotlib, tabulate and pywin32.
+You can also run soco by using Python engine. After the Python and needed libraries are installed, just run soco.py file. Soco is based on Python 3 and no\n-standard Python libraries PyQt5, matplotlib, tabulate and pywin32.
 
 License
 -------
 
-Copyright (C) 2022 Łukasz Laba <lukaszlaba@gmail.com>
+Copyright (C) 2022-2023 Łukasz Laba <lukaszlaba@gmail.com>
 
 Soco is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

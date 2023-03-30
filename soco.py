@@ -1,6 +1,6 @@
 '''
 --------------------------------------------------------------------------
-Copyright (C) 2022 Lukasz Laba <lukaszlaba@gmail.com>
+Copyright (C) 2022-2023 Lukasz Laba <lukaszlaba@gmail.com>
 
 This file is part of soco.
 
@@ -1094,8 +1094,8 @@ def set_title(info=''):
 
 def info():
     about = '''
-Soco - Staad member result extract tool
-Alpha stage software for testing only
+Soco - Staad member result extract tool.
+Beta stage software.
 
 -------------Licence-------------
 Soco is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
@@ -1104,7 +1104,7 @@ Soco is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY
 
 You should have received a copy of the GNU General Public License along with Soco; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA.
 
-Copyright (C) 2022 Lukasz Laba (e-mail : lukaszlaba@gmail.com)
+Copyright (C) 2022-2023 Lukasz Laba (e-mail : lukaszlaba@gmail.com)
 Project website: https://github.com/lukaszlaba/soco
 Check for lataest version: https://github.com/lukaszlaba/soco/releases
 '''
