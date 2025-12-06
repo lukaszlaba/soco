@@ -8,6 +8,9 @@ Soco - Staad member result extract tool
 Changelog
 ---------
 
+Soco 0.2.1 (beta stage) wip
+  - Fxy Fxz Fxyz check added
+
 Soco 0.1.0 (beta stage)
   - ui update
 
@@ -57,7 +60,7 @@ You can also run soco by using Python engine. After the Python and needed librar
 License
 -------
 
-Copyright (C) 2022-2023 Łukasz Laba <lukaszlaba@gmail.com>
+Copyright (C) 2022-2025 Łukasz Laba <lukaszlaba@gmail.com>
 
 Soco is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

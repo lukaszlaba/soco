@@ -28,7 +28,10 @@ class member_respoint():
         self.colmaxboltshear = 13
         self.colFynorm = 14
         self.colFznorm = 15
-    
+        self.colFxy = 16#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        self.colFxz = 17
+        self.colFxyz = 18
+        
     def calc_additional_forces(self):
         self.calc_Mtot()
         self.calc_Vtot()
@@ -37,6 +40,9 @@ class member_respoint():
         self.calc_bolt_maxshear()
         self.calc_Fynorm()
         self.calc_Fznorm()
+        self.calc_Fxy()#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        self.calc_Fxz()
+        self.calc_Fxyz()
         
     #---
     def calc_Mtot(self):
@@ -124,6 +130,26 @@ class member_respoint():
             if 'j' in self.number:
                 Fznom = -Fz
             record.append(Fznom)
+
+    def calc_Fxy(self): #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        for record in self.res:
+            Fx = record[self.colFx]
+            Fy = record[self.colFy]
+            record.append(round((Fx**2 + Fy**2)**0.5, 3))
+
+    def calc_Fxz(self):
+        for record in self.res:
+            Fx = record[self.colFx]
+            Fz = record[self.colFz]
+            record.append(round((Fx**2 + Fz**2)**0.5, 3))
+
+    def calc_Fxyz(self):
+        for record in self.res:
+            Fx = record[self.colFx]
+            Fy = record[self.colFy]
+            Fz = record[self.colFz]
+            record.append(round((Fx**2 + Fy**2 + Fz**2)**0.5, 3))
+
     #---
     @property
     def Fxmaxabs(self):
@@ -206,6 +232,16 @@ class member_respoint():
     def Fznormmin(self):
         return find_min(self.res, self.colFznorm)
 
+    @property
+    def Fxymaxabs(self):#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        return find_maxabs(self.res, self.colFxy)
+    @property
+    def Fxzmaxabs(self):
+        return find_maxabs(self.res, self.colFxz)
+    @property
+    def Fxyzmaxabs(self):
+        return find_maxabs(self.res, self.colFxyz) 
+        
     #---
     @property
     def Fxlist(self):
@@ -249,6 +285,16 @@ class member_respoint():
     @property
     def Fznormlist(self):
         return [i[self.colFznorm] for i in self.res]
+    
+    @property
+    def Fxylist(self):#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+        return [i[self.colFxy] for i in self.res]
+    @property
+    def Fxzlist(self):
+        return [i[self.colFxz] for i in self.res]
+    @property
+    def Fxyzlist(self):
+        return [i[self.colFxyz] for i in self.res]
 
     @property
     def LClist(self):
@@ -256,7 +302,6 @@ class member_respoint():
     @property
     def numberlist(self):
         return [self.number]*len(self.res)
-
 
 #test if main
 if __name__ == '__main__': 
@@ -270,7 +315,7 @@ if __name__ == '__main__':
     print(m.res[0])
     print(m.res[1])
     tab = []
-    tab.append(['Member', 'LC', 'Node', 'Fx', 'Fy', 'Fz', 'Mx', 'My', 'Mz', 'Mtot', 'Vtot', 'boltmaxtension', 'boltcompression', 'maxboltshear',  'Fynorm',  'Fznorm'])
+    tab.append(['Member', 'LC', 'Node', 'Fx', 'Fy', 'Fz', 'Mx', 'My', 'Mz', 'Mtot', 'Vtot', 'boltmaxtension', 'boltcompression', 'maxboltshear',  'Fynorm',  'Fznorm', 'Fxy', 'Fxz', 'Fxyz'])#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     tab.append(m.res[0])
     tab.append(m.res[1])
     from tabulate import tabulate
@@ -284,13 +329,6 @@ if __name__ == '__main__':
     print(m.Fznormlist)
     print(m.Mymax)
     print(m.Mymin)
-    
-
- 
- 
- 
- 
- 
- 
- 
-    
+    print(m.Fxymaxabs)#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    print(m.Fxzmaxabs)
+    print(m.Fxyzmaxabs)

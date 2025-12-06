@@ -1,12 +1,14 @@
 TODO:
-- add 'set precision' option
 - add data option
 - add full detail dev report
+- max conn/bolt update
+- add manual
 
 In progress:
 
 
 Done:
+- Fxy Fxz Fxyz check
 - check idea statica output
 - show selected members and nodes in staad
 - cheking if clipboard data is corect
