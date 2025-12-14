@@ -298,6 +298,8 @@ def show_in_staad():
     try:
         os = win32com.client.GetActiveObject("StaadPro.OpenSTAAD")
         geometry = os.Geometry
+        geometry._FlagAsMethod("SelectBeam")
+        geometry._FlagAsMethod("SelectNode")
     except:
         QMessageBox.about(myapp, "Warning", 'Staad not detected.')
         return None
