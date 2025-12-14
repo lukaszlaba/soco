@@ -3,13 +3,14 @@ Soco - Staad member result extract tool
 
 `Download binaries for Windows <https://github.com/lukaszlaba/soco/releases>`_
 
-.. image:: interface.png
+.. image:: docs/interface.png
 
 Changelog
 ---------
 
 Soco 0.2.1 (beta stage) wip
   - Fxy Fxz Fxyz check added
+  - manual added
 
 Soco 0.1.0 (beta stage)
   - ui update
