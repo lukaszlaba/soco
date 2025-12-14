@@ -46,7 +46,7 @@ Soco 0.0.1 (alpha stage for testing)
 Description
 -----------
 
-Soco is a tool that help analyse Staad member results. Soco output report and plots make easy to find extreme member forces needed for connection design.
+Soco is a tool that help analyse Staad member results. Soco output report and plots make easy to find extreme member forces needed for connection design. For how to use check manual pdf file.
 
 How to run it
 -------------
