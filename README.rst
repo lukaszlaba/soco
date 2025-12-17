@@ -8,7 +8,7 @@ Soco - Staad member result extract tool
 Changelog
 ---------
 
-Soco 0.2.1 (beta stage) wip
+Soco 0.2.1 (beta stage)
   - Fxy Fxz Fxyz check added
   - manual added
 
