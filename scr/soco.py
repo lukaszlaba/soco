@@ -35,6 +35,7 @@ import matplotlib.pyplot as plt
 from mainwindow_ui import Ui_MainWindow
 from member_respoint import member_respoint
 from preset_content import preset_dict
+import staad_API
 
 res_dict = {}
 unit_force = '[]'
@@ -68,8 +69,10 @@ class MAINWINDOW(QtWidgets.QMainWindow):
         self.ui.pushButton_check.clicked.connect(check_memberlist)
         #--
         self.ui.pushButton_clbResults.clicked.connect(clbResults)
-        self.ui.pushButton_clbMembers.clicked.connect(clbMembers)
-        self.ui.pushButton_clbNodes.clicked.connect(clbNodes)
+        #self.ui.pushButton_clbMembers.clicked.connect(clbMembers)
+        self.ui.pushButton_clbMembers.clicked.connect(apiMembers)
+        #self.ui.pushButton_clbNodes.clicked.connect(clbNodes)
+        self.ui.pushButton_clbNodes.clicked.connect(apiNodes)
         #--
         self.ui.comboBox_preset.currentIndexChanged.connect(set_preset_content)
         #--
@@ -174,6 +177,12 @@ def clbMembers():
     #--
     mlist = [str(int(i[0])) for i in data]
     set_memberlist(mlist)
+
+def apiMembers():
+    if not staad_instance_exist(): return
+    mlist = staad_API.get_selected_members()
+    mlist = list(map(str, mlist))
+    set_memberlist(mlist)
     
 def clbNodes():
     from tkinter import Tk
@@ -197,6 +206,25 @@ def clbNodes():
     if data[-1] ==['']: data.pop()
     #--
     nlist = [str(int(i[0])) for i in data]
+    mlist = get_memberlist()
+    mlist = [i.replace('i','') for i in mlist]
+    mlist = [i.replace('j','') for i in mlist]
+    mlist = list(dict.fromkeys(mlist))
+    outlist=[]
+    for i in mlist:
+        if i+'i' in res_dict.keys():
+            if res_dict[i+'i'].node in nlist:
+                outlist.append(i+'i')
+        if i+'j' in res_dict.keys():
+            if res_dict[i+'j'].node in nlist:
+                outlist.append(i+'j')
+    set_memberlist(outlist)
+
+def apiNodes():    
+    if not staad_instance_exist(): return
+    nlist = staad_API.get_selected_nodes()
+    nlist = list(map(str, nlist))
+    #-
     mlist = get_memberlist()
     mlist = [i.replace('i','') for i in mlist]
     mlist = [i.replace('j','') for i in mlist]
@@ -1152,6 +1180,14 @@ def print_report():
 def set_title(info=''):
     myapp.setWindowTitle(version + info)
 
+def staad_instance_exist():
+    if staad_API.instance_exist():
+        myapp.ui.textBrowser_output.setText('Staad model instance detected')
+        return True
+    else:
+        myapp.ui.textBrowser_output.setText('Staad model instance NOT detected')
+        return False
+
 def info():
     about = '''
 Soco - Staad member result extract tool.
@@ -1184,10 +1220,13 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
 
 
-'''
+r'''
 command used to frozening with pyinstaller
 pyinstaller --onefile --noconsole --icon=app.ico ..\soco.py
 
 command used to get updated mainwindow_ui.py
-pyuic5 ...\mainwindow.ui > ...\mainwindow_ui.py
+pyuic5 C:\Users\LABAL\source_soco\soco\scr\mainwindow.ui > C:\Users\LABAL\source_soco\soco\scr\mainwindow_ui.py
+fixing pyuic5 issue https://www.youtube.com/watch?v=HS2wcJCsbDU
+change Qt::Orientation::Horizontal in to Qt::Orientation::Horizontal
+QtCore.Qt.Qt::ScrollBarPolicy::ScrollBarAsNeeded -> QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded
 '''

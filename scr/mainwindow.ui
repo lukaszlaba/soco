@@ -160,48 +160,99 @@
          </size>
         </property>
         <property name="text">
-         <string>Clipboard data:</string>
+         <string>Clipboard data (or by api):</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_clbResults">
-        <property name="maximumSize">
-         <size>
-          <width>140</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>&gt;&gt; get beam results</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_14">
+        <item>
+         <widget class="QPushButton" name="pushButton_clbResults">
+          <property name="maximumSize">
+           <size>
+            <width>110</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>beam results</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_apiResults">
+          <property name="maximumSize">
+           <size>
+            <width>50</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>(by api)</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_clbMembers">
-        <property name="maximumSize">
-         <size>
-          <width>140</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>&gt;&gt; get beam numbers</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_16">
+        <item>
+         <widget class="QPushButton" name="pushButton_clbMembers">
+          <property name="maximumSize">
+           <size>
+            <width>105</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string> beam numbers</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_clbMembers_4">
+          <property name="maximumSize">
+           <size>
+            <width>50</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>(by api)</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_clbNodes">
-        <property name="maximumSize">
-         <size>
-          <width>140</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>&gt;&gt; get node numbers</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_17">
+        <item>
+         <widget class="QPushButton" name="pushButton_clbNodes">
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>node numbers</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_clbNodes_4">
+          <property name="maximumSize">
+           <size>
+            <width>50</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>(by api)</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
@@ -303,7 +354,7 @@
         <item>
          <spacer name="horizontalSpacer_2">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -384,7 +435,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
               <item>
                <spacer name="horizontalSpacer">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -457,7 +508,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item>
              <widget class="Line" name="line_5">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -497,7 +548,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item>
              <widget class="Line" name="line">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -537,7 +588,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item>
              <widget class="Line" name="line_9">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -577,7 +628,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item>
              <widget class="Line" name="line_10">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -597,7 +648,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item>
              <widget class="Line" name="line_7">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -630,7 +681,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item>
              <widget class="Line" name="line_8">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -650,7 +701,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item>
              <widget class="Line" name="line_2">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -670,7 +721,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item>
              <widget class="Line" name="line_3">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -710,7 +761,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item>
              <widget class="Line" name="line_21">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -750,7 +801,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item>
              <widget class="Line" name="line_22">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -770,7 +821,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item>
              <widget class="Line" name="line_4">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -816,7 +867,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item>
              <widget class="Line" name="line_6">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
              </widget>
             </item>
@@ -844,7 +895,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
             <item>
              <spacer name="verticalSpacer">
               <property name="orientation">
-               <enum>Qt::Vertical</enum>
+               <enum>Qt::Orientation::Vertical</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
