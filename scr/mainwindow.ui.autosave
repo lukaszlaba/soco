@@ -389,6 +389,9 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
+           <widget class="QComboBox" name="comboBox"/>
+          </item>
+          <item>
            <widget class="QTextBrowser" name="textBrowser_output">
             <property name="enabled">
              <bool>true</bool>

@@ -28,7 +28,7 @@ import win32com.client
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
 from PyQt5.QtPrintSupport import QPrintDialog
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QInputDialog
 from tabulate import tabulate
 import matplotlib.pyplot as plt
 
@@ -36,12 +36,14 @@ from mainwindow_ui import Ui_MainWindow
 from member_respoint import member_respoint
 from preset_content import preset_dict
 import staad_API
+import utils
 
 res_dict = {}
-unit_force = '[]'
-unit_moment = '[]'
+unit_force = '[kN]'
+unit_moment = '[kNm]'
+load_env = ''
 
-version = 'soco 0.2.1'
+version = 'soco 0.3.1'
 
 class MAINWINDOW(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -69,10 +71,13 @@ class MAINWINDOW(QtWidgets.QMainWindow):
         self.ui.pushButton_check.clicked.connect(check_memberlist)
         #--
         self.ui.pushButton_clbResults.clicked.connect(clbResults)
-        #self.ui.pushButton_clbMembers.clicked.connect(clbMembers)
-        self.ui.pushButton_clbMembers.clicked.connect(apiMembers)
-        #self.ui.pushButton_clbNodes.clicked.connect(clbNodes)
-        self.ui.pushButton_clbNodes.clicked.connect(apiNodes)
+        self.ui.pushButton_apiResults.clicked.connect(apiResults)
+        self.ui.pushButton_clbMembers.clicked.connect(clbMembers)
+        self.ui.pushButton_apiMembers.clicked.connect(apiMembers)
+        self.ui.pushButton_clbNodes.clicked.connect(clbNodes)
+        self.ui.pushButton_apiNodes.clicked.connect(apiNodes)
+        #--
+        self.ui.pushButton_get_file_name.clicked.connect(get_staad_model_file_name)
         #--
         self.ui.comboBox_preset.currentIndexChanged.connect(set_preset_content)
         #--
@@ -122,7 +127,82 @@ def clbResults():
     res_dict = {}
     memb = None
     end = -1
-    for i in range(1, len(data)-1):
+    #---remove empty record at the end
+    if data[-1] == ['']:
+        data.pop() 
+    #---
+    for i in range(1, len(data)):
+        record = data[i]
+        if record[0] != '':
+            memb_i = member_respoint()
+            memb_j = member_respoint()
+            curent_mem_number = record[0]
+            memb_i.number = curent_mem_number + 'i'
+            memb_j.number = curent_mem_number + 'j'
+        if end == -1:
+            memb_i.res.append(record)
+            memb_i.node = record[2]
+        #transform to internal force values instead of end forces
+        if end == 1:
+            record[3] = -record[3] # Fx sign update at the member end
+            record[4] = -record[4] # Fy sign update at the member end
+            record[5] = -record[5] # Fz sign update at the member end
+            record[6] = -record[6] # Mx sign update at the member end
+            record[7] = -record[7] # My sign update at the member end
+            record[8] = -record[8] # Mz sign update at the member end
+            memb_j.res.append(record)
+            memb_j.node = record[2]
+        end = end * -1
+        res_dict[memb_i.number] = memb_i
+        res_dict[memb_j.number] = memb_j
+    #--
+    for key in res_dict:
+        res_dict[key].unit_force = unit_force
+        res_dict[key].unit_moment = unit_moment
+        res_dict[key].calc_additional_forces()
+    #---clear load env sescription 
+    global load_env
+    lc_list = res_dict[list(res_dict)[0]].LClist
+    load_env = utils.describe_ranges(lc_list)
+    #---
+    myapp.ui.textBrowser_output.setText('>>>> %s res point data loaded from %s <<<<'%(len(res_dict.keys()), ' clipboard'))
+
+
+def apiResults():
+    if not staad_instance_exist(): return
+    #--geting units
+    global unit_force
+    global unit_moment
+    global load_env
+    #--lc selection dialog
+    text, ok = QInputDialog.getText(myapp, 'Envelope definition', 'write envelope definition (example: 100 TO 110 130)', text=load_env)
+    if ok:
+        load_env = text
+    else: return
+    #--geting lc list for given envelope definition
+    lc_list = staad_API.get_lc_list_for_envelope(load_env)
+    
+    #--force unit dialog
+    available_force_units = staad_API.get_available_force_units()
+    unit, ok = QInputDialog.getItem(myapp, 'Force unit', 'Select force unit', available_force_units, available_force_units.index(unit_force), False)
+    if ok:
+        unit_force = unit
+    else: return
+    #--moment unit dialog
+    available_moment_units = staad_API.get_available_moment_units()
+    unit, ok = QInputDialog.getItem(myapp, 'Moment unit', 'Select moment unit:', available_moment_units, available_moment_units.index(unit_moment), False)
+    if ok:
+        unit_moment = unit
+    else: return
+    #--geting results
+    myapp.ui.textBrowser_output.setText('Loading data from Staad via API...')
+    data = staad_API.get_beam_end_forces_tabe(lc_list, unit_force, unit_moment, myapp.ui.progressBar)
+    #--
+    global res_dict
+    res_dict = {}
+    memb = None
+    end = -1
+    for i in range(0, len(data)):
         record = data[i]
         if record[0] != '':
             memb_i = member_respoint()
@@ -152,7 +232,8 @@ def clbResults():
         res_dict[key].unit_moment = unit_moment
         res_dict[key].calc_additional_forces()
     #---
-    myapp.ui.textBrowser_output.setText('>>>> %s res point data loaded from %s <<<<'%(len(res_dict.keys()), ' model name '))
+    myapp.ui.textBrowser_output.setText('>>>> %s res point data loaded from %s model<<<<'%(len(res_dict.keys()), staad_API.get_filename()))
+
 
 def clbMembers():
     from tkinter import Tk
@@ -167,10 +248,10 @@ def clbMembers():
     # - cheking if clipboard data is corect
     try:
         if not len(data[0])==7 :
-            QMessageBox.about(myapp, "Warning", 'It looks, the cipboard have no Staad member data.')
+            QMessageBox.about(myapp, "Warning", 'It looks, the clipboard have no Staad member data.')
             return None
     except:
-        QMessageBox.about(myapp, "Warning", 'It looks, the cipboard have no Staad member data.')
+        QMessageBox.about(myapp, "Warning", 'It looks, the clipboard have no Staad member data.')
         return None
     #--
     if data[-1] ==['']: data.pop()
@@ -197,10 +278,10 @@ def clbNodes():
     # - cheking if clipboard data is corect
     try:
         if not len(data[0])==4 :
-            QMessageBox.about(myapp, "Warning", 'It looks, the cipboard have no Staad node data.')
+            QMessageBox.about(myapp, "Warning", 'It looks, the clipboard have no Staad node data.')
             return None
     except:
-        QMessageBox.about(myapp, "Warning", 'It looks, the cipboard have no Staad node data.')
+        QMessageBox.about(myapp, "Warning", 'It looks, the clipboard have no Staad node data.')
         return None
     #--
     if data[-1] ==['']: data.pop()
@@ -856,6 +937,11 @@ def show_report():
         report += 'Data source - ' + sourcefile + '\n'
     report += 'Results for  - ' + str(mlist)
     report += '\n\n'
+    sourcefile = myapp.ui.lineEdit_staadname.text()
+    if sourcefile:
+        report += 'Data source - ' + sourcefile + '\n'   
+    if load_env:
+        report += 'Considered load cases - ' + load_env + '\n'   
     report += 'Fx Fy Fz Mx My Mz are Staad format member intenal forces\n'
     report += 'Force unit - %s, Moment unit - %s'%(unit_force, unit_moment)
     report += '\n\n'
@@ -1182,11 +1268,17 @@ def set_title(info=''):
 
 def staad_instance_exist():
     if staad_API.instance_exist():
-        myapp.ui.textBrowser_output.setText('Staad model instance detected')
         return True
     else:
-        myapp.ui.textBrowser_output.setText('Staad model instance NOT detected')
+        QMessageBox.about(myapp, "Warning", 'Staad model instance NOT detected')
         return False
+    
+def get_staad_model_file_name():
+    if not staad_instance_exist():
+        myapp.ui.lineEdit_staadname.setText('')
+    else:
+        myapp.ui.lineEdit_staadname.setText(staad_API.get_filename())
+    
 
 def info():
     about = '''
@@ -1216,17 +1308,17 @@ if __name__ == '__main__':
     myapp.setWindowIcon(QtGui.QIcon('app.ico'))
     myapp.ui.comboBox_preset.addItems(preset_dict.keys())
     myapp.ui.comboBox_preset.setCurrentIndex(3)
+    myapp.ui.progressBar.setVisible(False)
     myapp.show()
     sys.exit(app.exec_())
 
 
 r'''
 command used to frozening with pyinstaller
-pyinstaller --onefile --noconsole --icon=app.ico ..\soco.py
+pyinstaller --onefile --noconsole --icon=app.ico C:\Users\LABAL\source_soco\soco\scr\soco.py
 
 command used to get updated mainwindow_ui.py
 pyuic5 C:\Users\LABAL\source_soco\soco\scr\mainwindow.ui > C:\Users\LABAL\source_soco\soco\scr\mainwindow_ui.py
-fixing pyuic5 issue https://www.youtube.com/watch?v=HS2wcJCsbDU
-change Qt::Orientation::Horizontal in to Qt::Orientation::Horizontal
-QtCore.Qt.Qt::ScrollBarPolicy::ScrollBarAsNeeded -> QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded
+QT Creator 11.0.0 used for ui file edit
+https://download.qt.io/official_releases/qtcreator/11.0/11.0.0/
 '''

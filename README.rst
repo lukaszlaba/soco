@@ -8,6 +8,9 @@ Soco - Staad member result extract tool
 Changelog
 ---------
 
+Soco 0.3.1 (beta stage)
+  - getting results via Staad API as clipboard alternative
+
 Soco 0.2.1 (beta stage)
   - Fxy Fxz Fxyz check added
   - manual added
@@ -56,7 +59,7 @@ Link to windows binaries download is shown below.
 
 https://github.com/lukaszlaba/soco/releases
 
-You can also run soco by using Python engine. After the Python and needed libraries are installed, just run soco.py file. Soco is based on Python 3 and no\n-standard Python libraries PyQt5, matplotlib, tabulate and pywin32.
+You can also run soco by using Python engine. After the Python and needed libraries are installed, just run soco.py file. Soco is based on Python 3.12 and no\n-standard Python libraries PyQt5, matplotlib, tabulate, openstaad and pywin32.
 
 License
 -------
