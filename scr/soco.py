@@ -40,7 +40,7 @@ import utils
 
 res_dict = {}
 unit_force = '[kN]'
-unit_moment = '[kNm]'
+unit_moment = '[kN-m]'
 load_env = ''
 
 version = 'soco 0.3.1'
@@ -163,7 +163,7 @@ def clbResults():
     #---clear load env sescription 
     global load_env
     lc_list = res_dict[list(res_dict)[0]].LClist
-    load_env = utils.describe_ranges(lc_list)
+    load_env = staad_API.describe_ranges(lc_list)
     #---
     myapp.ui.textBrowser_output.setText('>>>> %s res point data loaded from %s <<<<'%(len(res_dict.keys()), ' clipboard'))
 

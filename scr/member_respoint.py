@@ -58,16 +58,19 @@ class member_respoint():
             record.append(round((Fy**2 + Fz**2)**0.5, 3))
 
     def calc_bolt_maxtension(self):
+        moment_factor = 1
+        if 'kip' in self.unit_force and 'kN' in self.unit_moment: moment_factor = 0.224809
+        if 'kN' in self.unit_force and 'kip' in self.unit_moment: moment_factor = 4.448222
+        #-
+        if 'ft' in self.unit_moment: a = 1
+        if 'in' in self.unit_moment: a = 12
+        if 'm' in self.unit_moment: a = 0.305
+        if 'mm' in self.unit_moment: a = 305  
+        #-      
         for record in self.res:
-            My = abs(record[self.colMy])
-            Mz = abs(record[self.colMz])
-            Fx = record[self.colFx]
-            #--
-            if 'ft' in self.unit_moment: a = 1
-            if 'in' in self.unit_moment: a = 12
-            if 'm' in self.unit_moment: a = 0.305
-            if 'mm' in self.unit_moment: a = 305
-            #--   
+            My = abs(record[self.colMy])*moment_factor
+            Mz = abs(record[self.colMz])*moment_factor
+            Fx = record[self.colFx]  
             fp = Fx / 4
             fm = -My / a / 2 - Mz / a / 2
             f = fp + fm
@@ -75,16 +78,19 @@ class member_respoint():
             record.append(round(f, 3))
 
     def calc_bolt_maxcompression(self):
+        moment_factor = 1
+        if 'kip' in self.unit_force and 'kN' in self.unit_moment: moment_factor = 0.224809
+        if 'kN' in self.unit_force and 'kip' in self.unit_moment: moment_factor = 4.448222
+        #-
+        if 'ft' in self.unit_moment: a = 1
+        if 'in' in self.unit_moment: a = 12
+        if 'm' in self.unit_moment: a = 0.305
+        if 'mm' in self.unit_moment: a = 305  
+        #-  
         for record in self.res:
-            My = abs(record[self.colMy])
-            Mz = abs(record[self.colMz])
+            My = abs(record[self.colMy])*moment_factor
+            Mz = abs(record[self.colMz])*moment_factor
             Fx = record[self.colFx]
-            #--
-            if 'ft' in self.unit_moment: a = 1
-            if 'in' in self.unit_moment: a = 12
-            if 'm' in self.unit_moment: a = 0.305
-            if 'mm' in self.unit_moment: a = 305
-            #--
             fp = Fx / 4
             fm = My / a / 2 + Mz / a / 2
             f = fp + fm
@@ -92,18 +98,21 @@ class member_respoint():
             record.append(round(f, 3))
 
     def calc_bolt_maxshear(self):
+        moment_factor = 1
+        if 'kip' in self.unit_force and 'kN' in self.unit_moment: moment_factor = 0.224809
+        if 'kN' in self.unit_force and 'kip' in self.unit_moment: moment_factor = 4.448222
+        #-
+        if 'ft' in self.unit_moment: a = 1
+        if 'in' in self.unit_moment: a = 12
+        if 'm' in self.unit_moment: a = 0.305
+        if 'mm' in self.unit_moment: a = 305  
+        #-        
         for record in self.res:
             Fy = abs(record[self.colFy])
             Fz = abs(record[self.colFz])
-            Mx = abs(record[self.colMx])
+            Mx = abs(record[self.colMx])*moment_factor
             fvy = Fy / 4
             fvz = Fz / 4
-            #--
-            if 'ft' in self.unit_moment: a = 1
-            if 'in' in self.unit_moment: a = 12
-            if 'm' in self.unit_moment: a = 0.305
-            if 'mm' in self.unit_moment: a = 305
-            #--
             fm = Mx / 2 / (a**2 + a**2)**0.5
             fmy = fm/2**0.5
             fmz = fm/2**0.5
@@ -309,8 +318,10 @@ if __name__ == '__main__':
     m.number = '2i'
     m.node = '1'
     #              L/C	Node     Fx     Fy      Fz    Mx  	 My 	Mz
-    m.res.append(['1', '100', '9', 12.782, -0.283, 6.743, -0.003, 0,  4.299])
+    m.res.append(['1', '100', '9', 0, 4, 0, 1, 0,  0])
     m.res.append(['', '101', '9', 15.134, -53.945, 8.024, 0.014, 0, -239.807])
+    m.unit_force = '[kN]'
+    m.unit_moment='[kip-ft]'
     m.calc_additional_forces()
     print(m.res[0])
     print(m.res[1])
@@ -320,15 +331,16 @@ if __name__ == '__main__':
     tab.append(m.res[1])
     from tabulate import tabulate
     print(m.number)
+    print(m.unit_force, m.unit_moment)
     print(tabulate(tab, headers="firstrow", tablefmt="grid"))
-    print(m.Fynormmax)
-    print(m.Fynormmin)
-    print(m.Fznormmax)
-    print(m.Fznormmin)
-    print(m.Fynormlist)
-    print(m.Fznormlist)
-    print(m.Mymax)
-    print(m.Mymin)
-    print(m.Fxymaxabs)#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    print(m.Fxzmaxabs)
-    print(m.Fxyzmaxabs)
+    # print(m.Fynormmax)
+    # print(m.Fynormmin)
+    # print(m.Fznormmax)
+    # print(m.Fznormmin)
+    # print(m.Fynormlist)
+    # print(m.Fznormlist)
+    # print(m.Mymax)
+    # print(m.Mymin)
+    # print(m.Fxymaxabs)#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # print(m.Fxzmaxabs)
+    # print(m.Fxyzmaxabs)

@@ -9,7 +9,7 @@ _force_units['[kN]'] = 1.0
 _force_units['[kip]'] = 4.4482216
 
 _moment_units = {}
-_moment_units['[kNm]'] = 1.0
+_moment_units['[kN-m]'] = 1.0
 _moment_units['[kip-ft]'] = 1.3558179
 _moment_units['[kip-in]'] = 0.1129848
 
@@ -28,7 +28,6 @@ def instance_exist():
         else: return False
     except:
         return False
-
 
 
 def get_selected_members():
@@ -55,13 +54,15 @@ def staad_force_unit():
     if base_unit == 'English':
         return '[kip]'
 
+
 def staad_moment_unit():
     if not instance_exist(): return ''
     base_unit = Root().GetBaseUnit()
     if base_unit == 'Metric':
-        return '[kNm]'
+        return '[kN-m]'
     if base_unit == 'English':
-        return '[kip-ft]'
+        return '[kip-in]'
+
 
 def get_beam_end_forces_tabe(lc_list=[1, 2, 3], force_unit='[kip]', moment_unit='[kip-in]', progress_bar=None):
     """
@@ -146,7 +147,7 @@ def get_lc_list_for_envelope(envelope='1 TO 10 13'):
     return out_lc_list
 
 
-def _in_specified_ranges(x, spec):
+def _in_specified_ranges(x, spec): #AI generated
     """
     Return True if number x belongs to the ranges described by `spec`.
 
@@ -184,6 +185,137 @@ def _in_specified_ranges(x, spec):
             i += 1
     return False
 
+
+def describe_ranges(values, range_word="TO", sep=" "): #AI generated
+    """
+    Convert a list of integers into a compact range description string.
+
+    Examples:
+        [1,2,3,4,8,11,12,13] -> "1 TO 4 8 11 TO 13"
+        [5]                  -> "5"
+        []                   -> ""
+        [-3, -2, -1, 0, 2]   -> "-3 TO 0 2"
+
+    Parameters
+    ----------
+    values : Iterable[int]
+        The input numbers (will be de-duplicated and sorted).
+    range_word : str, optional
+        The token used to denote ranges. Default is "TO".
+    sep : str, optional
+        Separator between parts. Default is a single space.
+
+    Returns
+    -------
+    str
+        The compact range description.
+    """
+    # Normalize: sort unique integers
+    nums = sorted(set(int(v) for v in values))
+    if not nums:
+        return ""
+
+    parts = []
+    start = prev = nums[0]
+
+    def emit_range(a, b):
+        if a == b:
+            parts.append(str(a))
+        else:
+            parts.append(f"{a} {range_word} {b}")
+
+    for n in nums[1:]:
+        if n == prev + 1:
+            # still in a run
+            prev = n
+        else:
+            # end current run
+            emit_range(start, prev)
+            # start new run
+            start = prev = n
+    # emit last run
+    emit_range(start, prev)
+
+    return sep.join(parts)
+
+
+def extract_envelope_ranges_by_id(std_path): #AI generated
+    """
+    Parse a STAAD .std file for lines of the form:
+        "<segments> ENVELOPE <id> [TYPE <type>]"
+    where <segments> is a space-separated sequence of:
+        - single integers, e.g., "2000"
+        - ranges "A TO B", e.g., "2145 TO 2164"
+    Examples:
+        "2000 TO 2164 ENVELOPE 3 TYPE STRENGTH"
+        "2000 2145 TO 2164 4000 TO 4071 ENVELOPE 5"
+
+    Returns a dict keyed by envelope ID:
+        { <id>: "<normalized segments>" }
+    If the same id appears multiple times, segments are appended with a space.
+    Comment lines starting with '*' and empty lines are ignored.
+    """
+
+    # Split the line into <prefix> ENVELOPE <id> [TYPE <type>]
+    env_split_re = re.compile(
+        r'^(?P<prefix>.+?)\s+ENVELOPE\s+(?P<id>\d+)(?:\s+TYPE\s+\S+)?\s*$',
+        flags=re.IGNORECASE
+    )
+
+    def normalize_prefix(prefix: str) -> str:
+        """
+        Normalize the <prefix> so it contains only integers and 'TO',
+        with single spaces and uppercase 'TO'. Also accepts compact
+        tokens like '2145TO2164' and splits them correctly.
+        """
+        s = prefix.upper().strip()
+        s = re.sub(r'\s+', ' ', s)
+        tokens = []
+        for tok in s.split(' '):
+            if not tok:
+                continue
+            if tok == 'TO':
+                tokens.append('TO')
+            elif re.fullmatch(r'\d+', tok):
+                tokens.append(str(int(tok)))  # normalize leading zeros
+            else:
+                # Recover cases like "2145TO2164"
+                m = re.fullmatch(r'(\d+)TO(\d+)', tok)
+                if m:
+                    tokens.extend([str(int(m.group(1))), 'TO', str(int(m.group(2)))])
+                else:
+                    # Unexpected token; raise to skip this line gracefully
+                    raise ValueError(f"Unexpected token: {tok}")
+        return ' '.join(tokens)
+
+    result: Dict[int, str] = {}
+
+    with open(std_path, "r", encoding="utf-8", errors="ignore") as f:
+        for raw in f:
+            line = raw.strip()
+            if not line or line.startswith('*'):
+                continue
+
+            m = env_split_re.match(line)
+            if not m:
+                continue
+
+            prefix = m.group('prefix')
+            try:
+                range_str = normalize_prefix(prefix)
+            except ValueError:
+                # Skip malformed prefixes
+                continue
+
+            env_id = int(m.group('id'))
+
+            if env_id in result and result[env_id]:
+                # Append segments for repeated IDs
+                result[env_id] = f"{result[env_id]} {range_str}"
+            else:
+                result[env_id] = range_str
+
+    return result
 
 #test if main
 if __name__ == '__main__':
