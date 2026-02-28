@@ -10,6 +10,7 @@ Changelog
 
 Soco 0.3.1 (beta stage)
   - getting results via Staad API as clipboard alternative
+  - manual update
 
 Soco 0.2.1 (beta stage)
   - Fxy Fxz Fxyz check added
@@ -64,7 +65,7 @@ You can also run soco by using Python engine. After the Python and needed librar
 License
 -------
 
-Copyright (C) 2022-2025 Łukasz Laba <lukaszlaba@gmail.com>
+Copyright (C) 2022-2026 Łukasz Laba <lukaszlaba@gmail.com>
 
 Soco is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

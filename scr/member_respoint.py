@@ -318,10 +318,10 @@ if __name__ == '__main__':
     m.number = '2i'
     m.node = '1'
     #              L/C	Node     Fx     Fy      Fz    Mx  	 My 	Mz
-    m.res.append(['1', '100', '9', 0, 4, 0, 1, 0,  0])
+    m.res.append(['1', '100', '9', 15, 4, 0, 200, -200,  -100])
     m.res.append(['', '101', '9', 15.134, -53.945, 8.024, 0.014, 0, -239.807])
     m.unit_force = '[kN]'
-    m.unit_moment='[kip-ft]'
+    m.unit_moment='[kip-in]'
     m.calc_additional_forces()
     print(m.res[0])
     print(m.res[1])

@@ -1,6 +1,6 @@
 '''
 --------------------------------------------------------------------------
-Copyright (C) 2022-2025 Lukasz Laba <lukaszlaba@gmail.com>
+Copyright (C) 2022-2026 Lukasz Laba <lukaszlaba@gmail.com>
 
 This file is part of soco.
 
@@ -163,7 +163,7 @@ def clbResults():
     #---clear load env sescription 
     global load_env
     lc_list = res_dict[list(res_dict)[0]].LClist
-    load_env = staad_API.describe_ranges(lc_list)
+    load_env = staad_API.describe_lcranges(lc_list)
     #---
     myapp.ui.textBrowser_output.setText('>>>> %s res point data loaded from %s <<<<'%(len(res_dict.keys()), ' clipboard'))
 
@@ -175,13 +175,19 @@ def apiResults():
     global unit_moment
     global load_env
     #--lc selection dialog
-    text, ok = QInputDialog.getText(myapp, 'Envelope definition', 'write envelope definition (example: 100 TO 110 130)', text=load_env)
+    text, ok = QInputDialog.getText(myapp, 'Envelope definition', 'write envelope definition (exampls: "100 TO 110 130" or "ENVELOPE 1")', text=load_env)
     if ok:
         load_env = text
     else: return
     #--geting lc list for given envelope definition
-    lc_list = staad_API.get_lc_list_for_envelope(load_env)
-    
+    if 'ENVELOPE' in load_env:
+        lc_list = staad_API.get_lc_list_for_envelope(load_env)
+    else:
+        lc_list = staad_API.get_lc_list_for_lcrange(load_env)
+    #--check we have lc
+    if not lc_list:
+        QMessageBox.about(myapp, "Infp", 'It looks, defined envelope no match any load cases.')
+        return
     #--force unit dialog
     available_force_units = staad_API.get_available_force_units()
     unit, ok = QInputDialog.getItem(myapp, 'Force unit', 'Select force unit', available_force_units, available_force_units.index(unit_force), False)
@@ -932,9 +938,6 @@ def show_report():
     #------
     mlist = get_memberlist()
     report = ''
-    sourcefile = myapp.ui.lineEdit_staadname.text()
-    if sourcefile:
-        report += 'Data source - ' + sourcefile + '\n'
     report += 'Results for  - ' + str(mlist)
     report += '\n\n'
     sourcefile = myapp.ui.lineEdit_staadname.text()

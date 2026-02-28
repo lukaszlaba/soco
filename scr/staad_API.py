@@ -39,6 +39,10 @@ def get_selected_nodes():
     if not instance_exist(): return []
     return list(Geometry().GetSelectedNodes())
 
+def get_filepath():
+    if not instance_exist(): return ''
+    filepath = Root().GetSTAADFile()
+    return filepath
 
 def get_filename():
     if not instance_exist(): return ''
@@ -139,15 +143,26 @@ def get_beam_end_forces_tabe(lc_list=[1, 2, 3], force_unit='[kip]', moment_unit=
     return out_table
 
 
-def get_lc_list_for_envelope(envelope='1 TO 10 13'):
+def get_lc_list_for_envelope(envelope='ENVELOPE 1'):
+    if not instance_exist(): return []
+    try:
+        env_id = int(envelope.split()[1])
+    except: return []
+    try:
+        lcrange = extract_envelope_ranges_by_id()[env_id]
+    except: return []
+    return get_lc_list_for_lcrange(lcrange)
+
+
+def get_lc_list_for_lcrange(lcrange='1 TO 10 13'):
     if not instance_exist(): return []
     #--
     all_lc = Load().GetPrimaryLoadCaseNumbers()
-    out_lc_list = [i for i in all_lc if _in_specified_ranges(i, envelope)]
+    out_lc_list = [i for i in all_lc if _in_specified_lcranges(i, lcrange)]
     return out_lc_list
 
 
-def _in_specified_ranges(x, spec): #AI generated
+def _in_specified_lcranges(x, spec): #AI generated
     """
     Return True if number x belongs to the ranges described by `spec`.
 
@@ -186,7 +201,7 @@ def _in_specified_ranges(x, spec): #AI generated
     return False
 
 
-def describe_ranges(values, range_word="TO", sep=" "): #AI generated
+def describe_lcranges(values, range_word="TO", sep=" "): #AI generated
     """
     Convert a list of integers into a compact range description string.
 
@@ -239,7 +254,12 @@ def describe_ranges(values, range_word="TO", sep=" "): #AI generated
     return sep.join(parts)
 
 
-def extract_envelope_ranges_by_id(std_path): #AI generated
+def extract_envelope_ranges_by_id(): #AI generated
+    std_path = get_filepath()
+    #-
+    if not instance_exist(): return []
+    #--
+    std_path = get_filepath()
     """
     Parse a STAAD .std file for lines of the form:
         "<segments> ENVELOPE <id> [TYPE <type>]"
@@ -323,5 +343,5 @@ if __name__ == '__main__':
     #print(instance_exist())
     #print(get_selected_members())
     #print(get_selected_nodes())
-    for i in get_beam_end_forces_tabe():
-        print(i)
+    #for i in get_beam_end_forces_tabe():
+    #    print(i)
