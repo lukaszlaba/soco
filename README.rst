@@ -8,6 +8,9 @@ Soco - Staad member result extract tool
 Changelog
 ---------
 
+Soco 0.3.2 (beta stage)
+  - getting results via Staad API now includes load combinations as well
+
 Soco 0.3.1 (beta stage)
   - getting results via Staad API as clipboard alternative
   - manual update

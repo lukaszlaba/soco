@@ -157,7 +157,8 @@ def get_lc_list_for_envelope(envelope='ENVELOPE 1'):
 def get_lc_list_for_lcrange(lcrange='1 TO 10 13'):
     if not instance_exist(): return []
     #--
-    all_lc = Load().GetPrimaryLoadCaseNumbers()
+    load = Load()
+    all_lc = load.GetPrimaryLoadCaseNumbers() + load.GetLoadCombinationCaseNumbers()
     out_lc_list = [i for i in all_lc if _in_specified_lcranges(i, lcrange)]
     return out_lc_list
 

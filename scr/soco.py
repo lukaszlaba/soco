@@ -43,7 +43,7 @@ unit_force = '[kN]'
 unit_moment = '[kN-m]'
 load_env = ''
 
-version = 'soco 0.3.1'
+version = 'soco 0.3.2'
 
 class MAINWINDOW(QtWidgets.QMainWindow):
     def __init__(self, parent=None):
@@ -130,6 +130,9 @@ def clbResults():
     #---remove empty record at the end
     if data[-1] == ['']:
         data.pop() 
+    #---remove empty record at end of each element if exist (not sure why sometimes this may occure)
+    for i in range(1, len(data)):
+        data[i] = data[i][:9]
     #---
     for i in range(1, len(data)):
         record = data[i]
@@ -160,7 +163,7 @@ def clbResults():
         res_dict[key].unit_force = unit_force
         res_dict[key].unit_moment = unit_moment
         res_dict[key].calc_additional_forces()
-    #---clear load env sescription 
+    #---load env description 
     global load_env
     lc_list = res_dict[list(res_dict)[0]].LClist
     load_env = staad_API.describe_lcranges(lc_list)
@@ -186,7 +189,7 @@ def apiResults():
         lc_list = staad_API.get_lc_list_for_lcrange(load_env)
     #--check we have lc
     if not lc_list:
-        QMessageBox.about(myapp, "Infp", 'It looks, defined envelope no match any load cases.')
+        QMessageBox.about(myapp, "Info", 'It looks, defined envelope no match any load cases.')
         return
     #--force unit dialog
     available_force_units = staad_API.get_available_force_units()
@@ -238,8 +241,12 @@ def apiResults():
         res_dict[key].unit_moment = unit_moment
         res_dict[key].calc_additional_forces()
     #---
-    myapp.ui.textBrowser_output.setText('>>>> %s res point data loaded from %s model<<<<'%(len(res_dict.keys()), staad_API.get_filename()))
-
+    end_status_text = ''
+    end_status_text = '>>>> %s res point data loaded from %s model<<<<'%(len(res_dict.keys()), staad_API.get_filename()) + '\n'
+    end_status_text += 'Given lodcace range: ' + load_env + '\n'
+    end_status_text += 'Found lodcace range: ' + staad_API.describe_lcranges(lc_list)
+    myapp.ui.textBrowser_output.setText(end_status_text)
+    
 
 def clbMembers():
     from tkinter import Tk

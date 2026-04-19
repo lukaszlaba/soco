@@ -21,7 +21,6 @@ def find_min(list=[[2,7,4], [43,3,-2]], col=2):
 def find_maxabs(list=[[2,7,4], [43,3,-32]], col=2):
     maxabsrecord = list[0]
     for record in list:
-        #print(record)
         if abs(record[col]) > abs(maxabsrecord[col]):
             maxabsrecord = record
     return abs(maxabsrecord[col]), maxabsrecord
